@@ -1,27 +1,54 @@
-# PlayersFrontEnd
+# Players Front-End 🎮
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.21.
+Este é o front-end do projeto de gestão de jogos e recompensas, desenvolvido em **Angular 18**. A aplicação consome uma API que gerencia usuários, times, jogadores e integrações com a rede **Stellar** para pagamentos de recompensas.
 
-## Development server
+## 🚀 Tecnologias Utilizadas
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+* **Angular 18**: Framework base.
+* **SCSS**: Pré-processador para estilos avançados.
+* **RxJS**: Gerenciamento de fluxos assíncronos e estados.
+* **Stellar SDK (Previsto)**: Integração para validação de carteiras e transações.
 
-## Code scaffolding
+---
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## 🛠️ Requisitos de Ambiente
 
-## Build
+Antes de começar, você precisará ter instalado:
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+* [Node.js](https://nodejs.org/) (versão 18 ou superior)
+* [Angular CLI](https://angular.dev/tools/cli) (`npm install -g @angular/cli`)
 
-## Running unit tests
+---
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## 💻 Instalação e Execução
 
-## Running end-to-end tests
+1. **Instale as dependências:**
+```bash
+npm install
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+```
 
-## Further help
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+2. **Inicie o servidor de desenvolvimento:**
+```bash
+npx ng serve
+
+```
+
+
+3. **Acesse a aplicação:**
+Abra o navegador em `http://localhost:4200/`.
+
+---
+
+## 📂 Estrutura de Domínio
+
+A interface é desenhada para cobrir as seguintes entidades do banco de dados:
+
+* **Autenticação**: Login baseado em `Usuario` e controle de acesso por `Role` (Admin, Jogador, Analista).
+* **Gestão de Times**: Listagem e detalhes dos times (`Time`).
+* **Dashboard de Jogadores**: Visualização de estatísticas individuais e integração com a `carteira_stellar`.
+* **Módulo de Jogos**: Registro de partidas, durações e pontuações (`Time_Jogo` e `Jogador_Jogo`).
+* **Financeiro/Blockchain**: Monitoramento do `status` das recompensas via `Transacao_Recompensa`.
+
+---

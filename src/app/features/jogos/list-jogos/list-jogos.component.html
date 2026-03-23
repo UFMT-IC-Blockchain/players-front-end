@@ -1,0 +1,48 @@
+<div class="list-container">
+  <div class="header-section">
+    <h2>Lista de Jogos</h2>
+    <p>Acompanhe o histórico de partidas e os resultados</p>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-state">
+    Carregando jogos...
+  </div>
+
+  <div *ngIf="errorMessage" class="error-alert">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!isLoading && jogos.length === 0" class="empty-state">
+    Nenhum jogo registrado ainda.
+  </div>
+
+  <div *ngIf="!isLoading && jogos.length > 0" class="cards-grid">
+    <div *ngFor="let jogo of jogos" class="jogo-card">
+      <div class="card-header">
+        <h3>Jogo #{{ jogo.id }}</h3>
+        <span class="duracao">Duração: {{ jogo.duracao }} min</span>
+      </div>
+      
+      <div class="card-body">
+        <div *ngIf="!jogo.resultados" class="loading-results">
+          Carregando resultados...
+        </div>
+
+        <div *ngIf="jogo.resultados && jogo.resultados.length === 0" class="no-results">
+          Nenhum time/resultado registrado para este jogo.
+        </div>
+
+        <div *ngIf="jogo.resultados && jogo.resultados.length > 0" class="resultados-list">
+          <h4>Placar</h4>
+          <ul>
+            <li *ngFor="let res of jogo.resultados" [ngClass]="{'vencedor': res.vencedor}">
+              <span class="time-id">Time #{{ res.timeId }}</span>
+              <span class="pontos">{{ res.pontuacao }} pts</span>
+              <span *ngIf="res.vencedor" class="badge-vencedor">🏆 Vencedor</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

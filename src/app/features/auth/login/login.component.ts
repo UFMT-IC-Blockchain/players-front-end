@@ -35,8 +35,8 @@ export class LoginComponent {
       this.authService.login(this.loginForm.value).subscribe({
         next: (response) => {
           this.isLoading = false;
-          if (response && response.token) {
-            this.authService.setToken(response.token);
+          if (response && (response.access_token || response.token)) {
+            this.authService.setToken(response.access_token || response.token);
           }
           // Assuming successful login navigates to dashboard
           this.router.navigate(['/']);

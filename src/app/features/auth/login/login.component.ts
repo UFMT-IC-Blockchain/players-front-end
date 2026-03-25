@@ -34,16 +34,22 @@ export class LoginComponent {
       
       this.authService.login(this.loginForm.value).subscribe({
         next: (response) => {
-          this.isLoading = false;
-          if (response && (response.access_token || response.token)) {
-            this.authService.setToken(response.access_token || response.token);
-          }
-          // Assuming successful login navigates to dashboard
-          this.router.navigate(['/']);
+
+          this.authService.setToken(response.access_token);
+          
+          
+          this.router.navigate(['/jogos']);
         },
         error: (err) => {
           this.isLoading = false;
-          this.errorMessage = 'Login failed. Please check your credentials.';
+          
+          
+          if (err.status === 401) {
+            this.errorMessage = 'Credenciais inválidas. Verifique seu usuário e senha.';
+          } else {
+            this.errorMessage = 'Erro de comunicação com o servidor.';
+          }
+          
           console.error('Login error', err);
         }
       });

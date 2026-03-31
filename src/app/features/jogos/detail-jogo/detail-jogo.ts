@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { JogoService } from '../../../core/services/jogo.service'; // Ajuste o caminho se precisar
-import { Jogo, MatchResult } from '../../../core/models/jogo.model'; // Ajuste o caminho se precisar
+import { JogoService } from '../../../core/services/jogo.service'; 
+import { Jogo, MatchResult } from '../../../core/models/jogo.model'; 
 import { forkJoin } from 'rxjs';
 
 @Component({
@@ -13,7 +13,7 @@ import { forkJoin } from 'rxjs';
   styleUrls: ['./detail-jogo.component.scss']
 })
 export class DetailJogoComponent implements OnInit {
-  
+    
   jogo: Jogo | null = null;
   resultados: MatchResult[] = [];
   isLoading: boolean = true;

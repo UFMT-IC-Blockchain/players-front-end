@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { JogoService } from '../../../core/services/jogo.service';
 import { JogoComDetalhes } from '../../../core/models/jogo.model';
 
 @Component({
   selector: 'app-list-jogos',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './list-jogos.component.html',
   styleUrls: ['./list-jogos.component.scss']
 })
@@ -27,7 +28,6 @@ export class ListJogosComponent implements OnInit {
       next: (jogosData) => {
         this.jogos = jogosData;
         
-        // Fetch results for each jogo
         this.jogos.forEach(jogo => {
           this.jogoService.getJogoResultados(jogo.id).subscribe({
             next: (resultados) => {

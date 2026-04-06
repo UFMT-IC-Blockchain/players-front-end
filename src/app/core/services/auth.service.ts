@@ -3,6 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
+export interface LoginResponse {
+  token: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -11,11 +15,11 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  login(credentials: { login: string; senha?: string }): Observable<any> {
+  login(credentials: { login: string; senha?: string }): Observable<LoginResponse> {
     // We assume the backend route will be /usuario/login or /auth/login based on current implementation
     // For now we use /usuario since that controller exists, or we can use /login.
     // Given backend structure, it seems the method validaLogin is inside usuario.service
-    return this.http.post(`${this.apiUrl}/usuario/login`, credentials);
+    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, credentials);
   }
 
   setToken(token: string): void {

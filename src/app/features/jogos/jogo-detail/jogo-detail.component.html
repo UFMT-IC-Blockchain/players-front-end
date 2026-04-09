@@ -52,5 +52,74 @@
         </div>
       </div>
     </div>
+
+    <div class="card registrar">
+      <h3>Registrar resultado</h3>
+
+      <div *ngIf="registerState.status === 'success'" class="alert success" role="status">
+        <span class="alert-icon">✓</span>
+        <span>{{ registerState.message }}</span>
+      </div>
+
+      <div *ngIf="registerState.status === 'error'" class="alert error" role="alert">
+        <span class="alert-icon">⚠</span>
+        <span>{{ registerState.message }}</span>
+      </div>
+
+      <form class="form" [formGroup]="resultadoForm" (ngSubmit)="onRegistrarResultado()">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="label-text" for="timeId">Time</label>
+            <input
+              id="timeId"
+              type="number"
+              inputmode="numeric"
+              class="input-field"
+              placeholder="Ex: 1"
+              formControlName="timeId"
+              [class.invalid]="resultadoForm.get('timeId')?.invalid && resultadoForm.get('timeId')?.touched"
+            />
+            <div class="error-text" *ngIf="resultadoForm.get('timeId')?.touched && resultadoForm.get('timeId')?.invalid">
+              <span *ngIf="resultadoForm.get('timeId')?.errors?.['required']">Informe o timeId.</span>
+              <span *ngIf="resultadoForm.get('timeId')?.errors?.['min']">Use um número maior que 0.</span>
+              <span *ngIf="resultadoForm.get('timeId')?.errors?.['integer']">Use um número inteiro.</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="label-text" for="pontos">Pontos</label>
+            <input
+              id="pontos"
+              type="number"
+              inputmode="numeric"
+              class="input-field"
+              placeholder="Ex: 3"
+              formControlName="pontos"
+              [class.invalid]="resultadoForm.get('pontos')?.invalid && resultadoForm.get('pontos')?.touched"
+            />
+            <div class="error-text" *ngIf="resultadoForm.get('pontos')?.touched && resultadoForm.get('pontos')?.invalid">
+              <span *ngIf="resultadoForm.get('pontos')?.errors?.['required']">Informe os pontos.</span>
+              <span *ngIf="resultadoForm.get('pontos')?.errors?.['min']">Use um valor maior ou igual a 0.</span>
+              <span *ngIf="resultadoForm.get('pontos')?.errors?.['max']">Use um valor menor ou igual a 999.</span>
+              <span *ngIf="resultadoForm.get('pontos')?.errors?.['integer']">Use um número inteiro.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button
+            class="btn-primary"
+            type="submit"
+            [disabled]="resultadoForm.invalid || registerState.status === 'submitting'"
+          >
+            <span *ngIf="registerState.status !== 'submitting'">Registrar</span>
+            <span *ngIf="registerState.status === 'submitting'" class="btn-loading">
+              <span class="mini-spinner" aria-hidden="true"></span>
+              Registrando...
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>

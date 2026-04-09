@@ -1,52 +1,70 @@
 <div class="list-container">
   <div class="header-section">
-    <h2>Lista de Jogos</h2>
-    <p>Acompanhe o histórico de partidas e os resultados</p>
+    <div class="title-wrapper">
+      <h2>Lista de Jogos</h2>
+      <p>Acompanhe o histórico de partidas e os resultados</p>
+    </div>
+    <button class="btn-primary" routerLink="/jogos/criar">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      Novo Jogo
+    </button>
   </div>
 
   <div *ngIf="isLoading" class="loading-state">
-    Carregando jogos...
+    <span class="loader"></span>
+    <p>Carregando jogos...</p>
   </div>
 
-  <div *ngIf="errorMessage" class="error-alert">
+  <div *ngIf="errorMessage" class="alert error">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     {{ errorMessage }}
   </div>
 
-  <div *ngIf="!isLoading && jogos.length === 0" class="empty-state">
-    Nenhum jogo registrado ainda.
+  <div *ngIf="!isLoading && jogos.length === 0" class="empty-state glass-card">
+    <div class="empty-icon">🎮</div>
+    <h3>Nenhum jogo encontrado</h3>
+    <p>Comece criando o primeiro jogo da temporada!</p>
+    <button class="btn-primary" routerLink="/jogos/criar">Criar Jogo</button>
   </div>
 
   <div *ngIf="!isLoading && jogos.length > 0" class="cards-grid">
-    <div *ngFor="let jogo of jogos" class="jogo-card">
+    <div *ngFor="let jogo of jogos" class="glass-card jogo-card">
       <div class="card-header">
-        <h3>Jogo #{{ jogo.id }}</h3>
-        <span class="duracao">Duração: {{ jogo.duracao }} min</span>
+        <div class="game-info">
+          <span class="id-tag">#{{ jogo.id }}</span>
+          <h3>Partida</h3>
+        </div>
+        <div class="duracao-badge">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          {{ jogo.duracao }} min
+        </div>
       </div>
       
       <div class="card-body">
         <div *ngIf="!jogo.resultados" class="loading-results">
-          Carregando resultados...
+          <span class="dot-loader"></span>
         </div>
 
         <div *ngIf="jogo.resultados && jogo.resultados.length === 0" class="no-results">
-          Nenhum time/resultado registrado para este jogo.
+          Aguardando placar...
         </div>
 
         <div *ngIf="jogo.resultados && jogo.resultados.length > 0" class="resultados-list">
-          <h4>Placar</h4>
-          <ul>
-            <li *ngFor="let res of jogo.resultados" [ngClass]="{'vencedor': res.vencedor}">
-              <span class="time-id">Time #{{ res.timeId }}</span>
-              <span class="pontos">{{ res.pontuacao }} pts</span>
-              <span *ngIf="res.vencedor" class="badge-vencedor"> Vencedor</span>
-            </li>
-          </ul>
+          <div class="score-row" *ngFor="let res of jogo.resultados" [ngClass]="{'vencedor': res.vencedor}">
+            <div class="team-info">
+              <span class="team-name">Time #{{ res.timeId }}</span>
+              <span *ngIf="res.vencedor" class="winner-badge">WINNER</span>
+            </div>
+            <span class="score-points">{{ res.pontuacao }}</span>
+          </div>
         </div>
       </div>
       
       <div class="card-footer">
-        <button class="detail-btn" [routerLink]="['/jogos', jogo.id]">Ver Detalhes</button>
-      </div>
+        <button class="btn-detail" [routerLink]="['/jogos', jogo.id]">
+          Detalhes
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
       </div>
     </div>
   </div>

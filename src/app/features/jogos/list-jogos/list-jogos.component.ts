@@ -28,7 +28,6 @@ export class ListJogosComponent implements OnInit {
       next: (jogosData) => {
         this.jogos = jogosData;
         
-        // Fetch results for each jogo
         this.jogos.forEach(jogo => {
           this.jogoService.getJogoResultados(jogo.id).subscribe({
             next: (resultados) => {

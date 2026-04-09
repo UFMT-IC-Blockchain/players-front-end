@@ -38,7 +38,7 @@
             <li *ngFor="let res of jogo.resultados" [ngClass]="{'vencedor': res.vencedor}">
               <span class="time-id">Time #{{ res.timeId }}</span>
               <span class="pontos">{{ res.pontuacao }} pts</span>
-              <span *ngIf="res.vencedor" class="badge-vencedor">🏆 Vencedor</span>
+              <span *ngIf="res.vencedor" class="badge-vencedor"> Vencedor</span>
             </li>
           </ul>
         </div>
@@ -46,6 +46,7 @@
       
       <div class="card-footer">
         <button class="detail-btn" [routerLink]="['/jogos', jogo.id]">Ver Detalhes</button>
+      </div>
       </div>
     </div>
   </div>

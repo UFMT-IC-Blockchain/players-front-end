@@ -11,7 +11,7 @@ import {
   Validators
 } from '@angular/forms';
 import { JogoService } from '../../../core/services/jogo.service';
-import { Jogo, MatchResult } from '../../../core/models/jogo.model';
+import { Jogo, MatchResult, MatchWinnerResult } from '../../../core/models/jogo.model';
 import { forkJoin, of, switchMap } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -25,6 +25,12 @@ type ResultadoFormGroup = FormGroup<{
   timeId: FormControl<number | null>;
   pontos: FormControl<number | null>;
 }>;
+
+type WinnerState =
+  | { status: 'loading' }
+  | { status: 'empty'; message: string }
+  | { status: 'ready'; data: MatchWinnerResult }
+  | { status: 'error'; message: string };
 
 const integerValidator = (): ValidatorFn => {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -49,8 +55,21 @@ export class JogoDetailComponent implements OnInit {
   loading = true;
   error: string | null = null;
   registerState: RegisterState = { status: 'idle' };
+  winnerState: WinnerState = { status: 'loading' };
   resultadoForm: ResultadoFormGroup;
   private jogoId: number | null = null;
+
+  get winnerReady(): MatchWinnerResult | null {
+    return this.winnerState.status === 'ready' ? this.winnerState.data : null;
+  }
+
+  get winnerEmptyMessage(): string | null {
+    return this.winnerState.status === 'empty' ? this.winnerState.message : null;
+  }
+
+  get winnerErrorMessage(): string | null {
+    return this.winnerState.status === 'error' ? this.winnerState.message : null;
+  }
 
   constructor(
     private route: ActivatedRoute,
@@ -83,6 +102,7 @@ export class JogoDetailComponent implements OnInit {
 
     this.jogoId = id;
     this.registerState = { status: 'idle' };
+    this.winnerState = { status: 'loading' };
 
     forkJoin({
       jogo: this.jogoService.getJogoById(id).pipe(
@@ -101,10 +121,37 @@ export class JogoDetailComponent implements OnInit {
           console.error('Erro ao carregar resultados:', err);
           return of([]);
         })
+      ),
+      winnerState: this.jogoService.getJogoWinner(id).pipe(
+        switchMap((winner) => {
+          if (winner.empate) {
+            return of({ status: 'ready', data: winner } as const);
+          }
+          if (winner.vencedorTimeId === null) {
+            return of({
+              status: 'empty',
+              message: 'Vencedor ainda não definido.'
+            } as const);
+          }
+          return of({ status: 'ready', data: winner } as const);
+        }),
+        catchError(err => {
+          if (err?.status === 404) {
+            return of({
+              status: 'empty',
+              message: 'Vencedor ainda não definido.'
+            } as const);
+          }
+          return of({
+            status: 'error',
+            message: 'Erro ao carregar o vencedor.'
+          } as const);
+        })
       )
-    }).subscribe(({ jogo, resultados }) => {
+    }).subscribe(({ jogo, resultados, winnerState }) => {
       this.jogo = jogo;
       this.resultados = resultados;
+      this.winnerState = winnerState;
       this.loading = false;
     });
   }
@@ -133,10 +180,43 @@ export class JogoDetailComponent implements OnInit {
 
     this.jogoService
       .registrarResultadoConfronto(this.jogoId, { timeId, pontos })
-      .pipe(switchMap(() => this.jogoService.getJogoResultados(this.jogoId as number)))
+      .pipe(
+        switchMap(() =>
+          forkJoin({
+            resultados: this.jogoService.getJogoResultados(this.jogoId as number),
+            winnerState: this.jogoService.getJogoWinner(this.jogoId as number).pipe(
+              switchMap((winner) => {
+                if (winner.empate) {
+                  return of({ status: 'ready', data: winner } as const);
+                }
+                if (winner.vencedorTimeId === null) {
+                  return of({
+                    status: 'empty',
+                    message: 'Vencedor ainda não definido.'
+                  } as const);
+                }
+                return of({ status: 'ready', data: winner } as const);
+              }),
+              catchError(err => {
+                if (err?.status === 404) {
+                  return of({
+                    status: 'empty',
+                    message: 'Vencedor ainda não definido.'
+                  } as const);
+                }
+                return of({
+                  status: 'error',
+                  message: 'Erro ao carregar o vencedor.'
+                } as const);
+              })
+            )
+          })
+        )
+      )
       .subscribe({
-        next: (resultadosAtualizados) => {
-          this.resultados = resultadosAtualizados;
+        next: ({ resultados, winnerState }) => {
+          this.resultados = resultados;
+          this.winnerState = winnerState;
           this.registerState = {
             status: 'success',
             message: 'Resultado registrado com sucesso.'

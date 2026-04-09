@@ -34,6 +34,49 @@
       </div>
     </div>
 
+    <div class="card vencedor">
+      <h3>Vencedor</h3>
+
+      <ng-container [ngSwitch]="winnerState.status">
+        <div *ngSwitchCase="'loading'" class="winner-state">
+          <span class="mini-spinner" aria-hidden="true"></span>
+          <p>Carregando vencedor...</p>
+        </div>
+
+        <div *ngSwitchCase="'error'" class="winner-state error">
+          <div class="error-icon">⚠️</div>
+          <p>{{ winnerErrorMessage }}</p>
+        </div>
+
+        <div *ngSwitchCase="'empty'" class="winner-state empty">
+          <div class="empty-icon">—</div>
+          <p>{{ winnerEmptyMessage }}</p>
+        </div>
+
+        <ng-container *ngSwitchCase="'ready'">
+          <div class="winner-ready" *ngIf="winnerReady as winner">
+            <div class="winner-badge" [class.draw]="winner.empate">
+              <span class="label">{{ winner.empate ? 'Empate' : 'Vencedor' }}</span>
+              <span class="value">
+                {{ winner.empate ? 'Sem vencedor definido' : ('Time #' + winner.vencedorTimeId) }}
+              </span>
+            </div>
+
+            <div class="placares" *ngIf="winner.placares.length > 0">
+              <div
+                class="placar-row"
+                *ngFor="let placar of winner.placares"
+                [class.is-winner]="!winner.empate && placar.timeId === winner.vencedorTimeId"
+              >
+                <span class="team">Time #{{ placar.timeId }}</span>
+                <span class="points">{{ placar.pontos }} pts</span>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+
     <div class="card resultados">
       <h3>Resultados do Confronto</h3>
       <div *ngIf="resultados.length === 0" class="empty-state">

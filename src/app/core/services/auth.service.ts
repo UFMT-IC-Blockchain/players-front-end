@@ -3,8 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
+import { jwtDecode } from 'jwt-decode';
+
 export interface LoginResponse {
-  token: string;
+  access_token: string;
 }
 
 @Injectable({
@@ -28,6 +30,21 @@ export class AuthService {
 
   getToken(): string | null {
     return localStorage.getItem('auth_token');
+  }
+
+  isAuthenticated(): boolean {
+    const token = this.getToken();
+    if (!token) {
+      return false;
+    }
+
+    try {
+      const decoded: any = jwtDecode(token);
+      const currentTime = Math.floor(Date.now() / 1000);
+      return decoded.exp > currentTime;
+    } catch (error) {
+      return false;
+    }
   }
 
   logout(): void {

@@ -4,11 +4,10 @@ import { RouterModule } from '@angular/router';
 import { JogoService } from '../../../core/services/jogo.service';
 import { JogoComDetalhes } from '../../../core/models/jogo.model';
 
-type ResultadosState =
-  | { status: 'idle' }
-  | { status: 'loading' }
-  | { status: 'loaded' }
-  | { status: 'error'; message: string };
+type ResultadosState = {
+  status: 'idle' | 'loading' | 'loaded' | 'error';
+  message?: string;
+};
 
 @Component({
   selector: 'app-list-jogos',

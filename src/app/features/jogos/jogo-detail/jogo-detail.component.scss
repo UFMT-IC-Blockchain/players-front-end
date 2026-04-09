@@ -262,15 +262,75 @@
         align-items: center;
         gap: 0.625rem;
       }
+    }
+  }
+}
 
-      .mini-spinner {
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        border: 2px solid rgba(255, 255, 255, 0.15);
-        border-top-color: rgba(255, 255, 255, 0.95);
-        animation: spin 800ms linear infinite;
-      }
+.mini-spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-top-color: rgba(255, 255, 255, 0.95);
+  animation: spin 800ms linear infinite;
+}
+
+.vencedor {
+  .winner-state {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.95rem 1.05rem;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.02);
+    color: rgba(255, 255, 255, 0.8);
+
+    &.error {
+      background: rgba(239, 68, 68, 0.08);
+      color: #fca5a5;
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+
+  .winner-badge {
+    display: grid;
+    padding: 1rem 1.1rem;
+    border-radius: 18px;
+    background: rgba(16, 185, 129, 0.08);
+
+    &.draw {
+      background: rgba(255, 193, 7, 0.08);
+    }
+
+    .label {
+      color: rgba(255, 255, 255, 0.65);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .value {
+      font-size: 1.25rem;
+      font-weight: 900;
+      line-height: 1.15;
+      color: rgba(255, 255, 255, 0.95);
+    }
+  }
+
+  .placar-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1rem;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.02);
+
+    &.is-winner {
+      background: rgba(16, 185, 129, 0.08);
     }
   }
 }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Jogo, MatchResult } from '../models/jogo.model';
+import { Jogo, MatchResult, MatchWinnerResult } from '../models/jogo.model';
 
 export type RegistrarResultadoConfrontoRequest = {
   timeId: number;
@@ -31,6 +31,10 @@ export class JogoService {
 
   getJogoResultados(jogoId: number): Observable<MatchResult[]> {
     return this.http.get<MatchResult[]>(`${this.apiUrl}/confrontos/${jogoId}/results`);
+  }
+
+  getJogoWinner(jogoId: number): Observable<MatchWinnerResult> {
+    return this.http.get<MatchWinnerResult>(`${this.apiUrl}/confrontos/${jogoId}/winner`);
   }
 
   registrarResultadoConfronto(

@@ -23,4 +23,8 @@ export class JogoService {
   getJogoResultados(jogoId: number): Observable<MatchResult[]> {
     return this.http.get<MatchResult[]>(`${this.apiUrl}/confrontos/${jogoId}/results`);
   }
+
+  criarJogo(jogoData: { duracao: number }): Observable<Jogo> {
+    return this.http.post<Jogo>(`${this.apiUrl}/jogo/criar`, jogoData);
+  }
 }

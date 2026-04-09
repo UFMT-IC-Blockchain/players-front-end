@@ -4,6 +4,15 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Jogo, MatchResult } from '../models/jogo.model';
 
+export type RegistrarResultadoConfrontoRequest = {
+  timeId: number;
+  pontos: number;
+};
+
+export type RegistrarResultadoConfrontoResponse = {
+  ok: true;
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -22,6 +31,16 @@ export class JogoService {
 
   getJogoResultados(jogoId: number): Observable<MatchResult[]> {
     return this.http.get<MatchResult[]>(`${this.apiUrl}/confrontos/${jogoId}/results`);
+  }
+
+  registrarResultadoConfronto(
+    jogoId: number,
+    payload: RegistrarResultadoConfrontoRequest
+  ): Observable<RegistrarResultadoConfrontoResponse> {
+    return this.http.post<RegistrarResultadoConfrontoResponse>(
+      `${this.apiUrl}/confrontos/${jogoId}/result`,
+      payload
+    );
   }
 
   criarJogo(jogoData: { duracao: number }): Observable<Jogo> {

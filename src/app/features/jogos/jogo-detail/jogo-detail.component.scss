@@ -194,8 +194,120 @@
       }
     }
   }
+
+  .registrar {
+    .alert {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.875rem 1rem;
+      border-radius: 14px;
+      border: 1px solid transparent;
+      margin-bottom: 1rem;
+      animation: fadeUp 240ms ease-out;
+
+      .alert-icon {
+        font-weight: 900;
+        width: 1.5rem;
+        text-align: center;
+      }
+
+      &.success {
+        border-color: rgba(16, 185, 129, 0.25);
+        background: rgba(16, 185, 129, 0.1);
+        color: #6ee7b7;
+      }
+
+      &.error {
+        border-color: rgba(239, 68, 68, 0.25);
+        background: rgba(239, 68, 68, 0.12);
+        color: #fca5a5;
+      }
+    }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.25rem;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .input-field {
+        &.invalid {
+          border-color: rgba(239, 68, 68, 0.5);
+          background: rgba(239, 68, 68, 0.06);
+        }
+      }
+
+      .error-text {
+        height: auto;
+      }
+
+      .actions {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .btn-loading {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.625rem;
+      }
+
+      .mini-spinner {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.15);
+        border-top-color: rgba(255, 255, 255, 0.95);
+        animation: spin 800ms linear infinite;
+      }
+    }
+  }
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .detail-container {
+    padding: 1.25rem;
+
+    .registrar {
+      .form {
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .actions {
+          justify-content: stretch;
+
+          .btn-primary {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
 }

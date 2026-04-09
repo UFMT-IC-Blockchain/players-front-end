@@ -15,9 +15,10 @@
     <p>Carregando jogos...</p>
   </div>
 
-  <div *ngIf="errorMessage" class="alert error">
+  <div *ngIf="errorMessage" class="glass-card" style="display:flex;align-items:center;gap:.75rem;padding:1rem 1.25rem;border:1px solid rgba(239,68,68,.25);background:rgba(239,68,68,.08);color:#fca5a5;">
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    {{ errorMessage }}
+    <div style="flex:1;">{{ errorMessage }}</div>
+    <button class="btn-primary" style="padding:.5rem .875rem;border-radius:.75rem" type="button" (click)="loadJogos()">Tentar novamente</button>
   </div>
 
   <div *ngIf="!isLoading && jogos.length === 0" class="empty-state glass-card">
@@ -28,7 +29,7 @@
   </div>
 
   <div *ngIf="!isLoading && jogos.length > 0" class="cards-grid">
-    <div *ngFor="let jogo of jogos" class="glass-card jogo-card">
+    <div *ngFor="let jogo of jogos; trackBy: trackByJogoId" class="glass-card jogo-card">
       <div class="card-header">
         <div class="game-info">
           <span class="id-tag">#{{ jogo.id }}</span>
@@ -41,23 +42,37 @@
       </div>
       
       <div class="card-body">
-        <div *ngIf="!jogo.resultados" class="loading-results">
-          <span class="dot-loader"></span>
-        </div>
-
-        <div *ngIf="jogo.resultados && jogo.resultados.length === 0" class="no-results">
-          Aguardando placar...
-        </div>
-
-        <div *ngIf="jogo.resultados && jogo.resultados.length > 0" class="resultados-list">
-          <div class="score-row" *ngFor="let res of jogo.resultados" [ngClass]="{'vencedor': res.vencedor}">
-            <div class="team-info">
-              <span class="team-name">Time #{{ res.timeId }}</span>
-              <span *ngIf="res.vencedor" class="winner-badge">WINNER</span>
-            </div>
-            <span class="score-points">{{ res.pontuacao }}</span>
+        <ng-container [ngSwitch]="resultadosStateByJogoId.get(jogo.id)?.status">
+          <div *ngSwitchCase="'loading'" class="loading-state" style="padding:1rem;gap:.75rem">
+            <span class="loader" style="width:24px;height:24px;border-width:2px"></span>
+            <p style="font-size:.875rem">Carregando resultados...</p>
           </div>
-        </div>
+
+          <div *ngSwitchCase="'error'" class="glass-card" style="display:flex;align-items:center;gap:1rem;padding:.875rem 1rem;border:1px solid rgba(239,68,68,.2);background:rgba(239,68,68,.08);color:#fca5a5;">
+            <div style="flex:1;font-size:.875rem;font-weight:600">
+              {{ resultadosStateByJogoId.get(jogo.id)?.message }}
+            </div>
+            <button class="btn-primary" style="padding:.5rem .875rem;border-radius:.75rem" type="button" (click)="loadResultadosForJogo(jogo)">
+              Recarregar
+            </button>
+          </div>
+
+          <ng-container *ngSwitchDefault>
+            <div *ngIf="jogo.resultados?.length === 0" class="no-results">
+              Aguardando placar...
+            </div>
+
+            <div *ngIf="(jogo.resultados?.length ?? 0) > 0" class="resultados-list">
+              <div class="score-row" *ngFor="let res of jogo.resultados" [ngClass]="{'vencedor': res.vencedor}">
+                <div class="team-info">
+                  <span class="team-name">Time #{{ res.timeId }}</span>
+                  <span *ngIf="res.vencedor" class="winner-badge">WINNER</span>
+                </div>
+                <span class="score-points">{{ res.pontuacao }}</span>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
       </div>
       
       <div class="card-footer">

@@ -16,6 +16,10 @@ export class JogoService {
     return this.http.get<Jogo[]>(`${this.apiUrl}/jogo/all`);
   }
 
+  getJogoById(id: number): Observable<Jogo> {
+    return this.http.get<Jogo>(`${this.apiUrl}/jogo/${id}`);
+  }
+
   getJogoResultados(jogoId: number): Observable<MatchResult[]> {
     return this.http.get<MatchResult[]>(`${this.apiUrl}/confrontos/${jogoId}/results`);
   }

@@ -1,0 +1,56 @@
+<div class="detail-container">
+  <div class="header">
+    <button class="back-btn" routerLink="/jogos">
+      <span class="icon">←</span> Voltar para a lista
+    </button>
+    <h1 *ngIf="jogo">Detalhes do Jogo #{{ jogo.id }}</h1>
+  </div>
+
+  <div *ngIf="loading" class="state-container">
+    <div class="spinner"></div>
+    <p>Carregando informações do jogo...</p>
+  </div>
+
+  <div *ngIf="error && !loading" class="state-container error">
+    <div class="error-icon">⚠️</div>
+    <p>{{ error }}</p>
+    <button class="retry-btn" (click)="ngOnInit()">Tentar novamente</button>
+  </div>
+
+  <div *ngIf="jogo && !loading && !error" class="content">
+    <div class="card main-info">
+      <h3>Informações Gerais</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <label>Duração</label>
+          <span>{{ jogo.duracao }} minutos</span>
+        </div>
+        <div class="info-item">
+          <label>Status</label>
+          <span class="badge" [class.completed]="resultados.length > 0">
+            {{ resultados.length > 0 ? 'Finalizado' : 'Em andamento' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card resultados">
+      <h3>Resultados do Confronto</h3>
+      <div *ngIf="resultados.length === 0" class="empty-state">
+        <p>Ainda não há resultados registrados para este jogo.</p>
+      </div>
+
+      <div *ngIf="resultados.length > 0" class="results-list">
+        <div *ngFor="let res of resultados" class="result-item" [class.winner]="res.vencedor">
+          <div class="team-info">
+            <span class="team-id">Time #{{ res.timeId }}</span>
+            <span *ngIf="res.vencedor" class="winner-label">🏆 Vencedor</span>
+          </div>
+          <div class="score">
+            {{ res.pontuacao }} pts
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

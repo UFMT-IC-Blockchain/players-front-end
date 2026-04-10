@@ -4,11 +4,12 @@ import { RouterOutlet } from '@angular/router';
 import { HttpErrorService } from './core/services/http-error.service';
 import { FeedbackMessage, FeedbackService } from './core/services/feedback.service';
 import { AlertComponent } from './shared/components/alert/alert.component';
+import { NavbarComponent } from './shared/components/navbar/navbar.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NgIf, NgFor, AsyncPipe, AlertComponent],
+  imports: [RouterOutlet, NgIf, NgFor, AsyncPipe, AlertComponent, NavbarComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

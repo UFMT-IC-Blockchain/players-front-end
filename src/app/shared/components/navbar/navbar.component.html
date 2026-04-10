@@ -1,0 +1,43 @@
+<nav class="navbar" *ngIf="isLoggedIn">
+  <div class="nav-content">
+    <div class="logo" routerLink="/jogos">
+      <span class="logo-icon">🎮</span>
+      <span class="logo-text">GUME</span>
+    </div>
+
+    <div class="nav-links">
+      <a routerLink="/jogos" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Jogos</a>
+      <a routerLink="/times" routerLinkActive="active">Times</a>
+      <a routerLink="/jogadores/busca" routerLinkActive="active">Jogadores</a>
+      <a routerLink="/estatisticas/top" routerLinkActive="active">Estatísticas</a>
+    </div>
+
+    <div class="user-section">
+      <div class="user-dropdown">
+        <div class="user-info">
+          <span class="welcome">Menu</span>
+          <span class="username">{{ username }}</span>
+        </div>
+        <div class="dropdown-content glass-card">
+          <a routerLink="/recompensas"><span class="icon">🏆</span> Recompensas</a>
+          <a routerLink="/roles"><span class="icon">🛡️</span> Minhas Roles</a>
+          <hr />
+          <button class="logout-item" (click)="openLogoutModal()">
+            <span class="icon">🚪</span> Sair
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<app-modal
+  [isOpen]="isModalOpen"
+  title="Confirmar Saída"
+  confirmText="Sair do Sistema"
+  cancelText="Continuar aqui"
+  (confirmed)="onLogout()"
+  (closed)="closeLogoutModal()"
+>
+  <p>Você tem certeza que deseja encerrar sua sessão? Será necessário fazer login novamente para acessar o sistema.</p>
+</app-modal>

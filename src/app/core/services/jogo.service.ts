@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Jogo, MatchResult, MatchWinnerResult } from '../models/jogo.model';
 
@@ -30,7 +30,12 @@ export class JogoService {
   }
 
   getJogoResultados(jogoId: number): Observable<MatchResult[]> {
-    return this.http.get<MatchResult[]>(`${this.apiUrl}/confrontos/${jogoId}/results`);
+    return this.http.get<any[]>(`${this.apiUrl}/confrontos/${jogoId}/results`).pipe(
+      map(results => results.map(r => ({
+        ...r,
+        timeId: r.idTime || r.timeId // Map idTime from backend to timeId for frontend
+      })))
+    );
   }
 
   getJogoWinner(jogoId: number): Observable<MatchWinnerResult> {

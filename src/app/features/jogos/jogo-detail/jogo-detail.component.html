@@ -53,9 +53,9 @@
         <ng-container *ngSwitchCase="'ready'">
           <div class="winner-ready" *ngIf="winnerReady as winner">
             <div class="winner-badge" [class.draw]="winner.empate">
-              <span class="label">{{ winner.empate ? 'Empate' : 'Vencedor' }}</span>
               <span class="value">
-                {{ winner.empate ? 'Sem vencedor definido' : ('Time #' + winner.vencedorTimeId) }}
+                {{ winner.empate ? 'Sem vencedor definido' : 'Time #' }}
+                <a *ngIf="!winner.empate" [routerLink]="['/times', winner.vencedorTimeId]" class="team-link">{{ winner.vencedorTimeId }}</a>
               </span>
             </div>
 
@@ -65,7 +65,9 @@
                 *ngFor="let placar of winner.placares"
                 [class.is-winner]="!winner.empate && placar.timeId === winner.vencedorTimeId"
               >
-                <span class="team">Time #{{ placar.timeId }}</span>
+                <span class="team">
+                  <a [routerLink]="['/times', placar.timeId]" class="team-link">Time #{{ placar.timeId }}</a>
+                </span>
                 <span class="points">{{ placar.pontos }} pts</span>
               </div>
             </div>
@@ -83,7 +85,7 @@
       <div *ngIf="resultados.length > 0" class="results-list">
         <div *ngFor="let res of resultados" class="result-item" [class.winner]="res.vencedor">
           <div class="team-info">
-            <span class="team-id">Time #{{ res.timeId }}</span>
+            <a class="team-id" [routerLink]="['/times', res.timeId]">Time #{{ res.timeId }}</a>
             <span *ngIf="res.vencedor" class="winner-label">🏆 Vencedor</span>
           </div>
           <div class="score">

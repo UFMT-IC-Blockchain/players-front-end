@@ -195,6 +195,9 @@ app-alert {
             font-size: 0.875rem;
             font-weight: 500;
             color: var(--text-primary);
+            text-decoration: none;
+            transition: color 0.2s;
+            &:hover { color: var(--primary); text-decoration: underline; }
           }
 
           .winner-badge {

@@ -63,7 +63,7 @@
             <div *ngIf="(jogo.resultados?.length ?? 0) > 0" class="resultados-list">
               <div class="score-row" *ngFor="let res of jogo.resultados" [ngClass]="{'vencedor': res.vencedor}">
                 <div class="team-info">
-                  <span class="team-name">Time #{{ res.timeId }}</span>
+                  <a class="team-name" [routerLink]="['/times', res.timeId]">Time #{{ res.timeId }}</a>
                   <span *ngIf="res.vencedor" class="winner-badge">WINNER</span>
                 </div>
                 <span class="score-points">{{ res.pontuacao }}</span>

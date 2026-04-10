@@ -22,7 +22,7 @@
         <div class="hint" *ngIf="walletCtrl.touched && walletCtrl.invalid" role="alert">
           <div *ngIf="walletCtrl.errors?.['required']">Informe a carteira Stellar.</div>
           <div *ngIf="walletCtrl.errors?.['pattern']">
-            Carteira inválida. Use o padrão ^G[A-Z2-7]{55}$.
+            Carteira inválida. Use o padrão ^G[A-Z2-7]{{ '{' }}55{{ '}' }}$.
           </div>
         </div>
       </div>

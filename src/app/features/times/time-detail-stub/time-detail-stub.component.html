@@ -1,10 +1,85 @@
 <div class="page">
   <div class="header">
     <a class="btn-outline" routerLink="/times">Voltar</a>
-    <h1>Time #{{ timeId }}</h1>
+    <h1>Time #{{ timeId ?? '—' }}</h1>
   </div>
 
-  <div class="card">
-    <p>Detalhe do time será implementado na próxima issue.</p>
+  <div *ngIf="status === 'loading'" class="state loading" role="status" aria-live="polite">
+    <span class="spinner" aria-hidden="true"></span>
+    <p>Carregando time...</p>
+  </div>
+
+  <div *ngIf="status === 'error'" class="state error" role="alert">
+    <p>{{ errorMessage }}</p>
+    <button type="button" class="btn-primary" (click)="loadTime()">Tentar novamente</button>
+  </div>
+
+  <div *ngIf="status === 'not_found'" class="state error" role="alert">
+    <p>Time não encontrado.</p>
+    <a class="btn-primary" routerLink="/times">Voltar para a lista</a>
+  </div>
+
+  <div *ngIf="status === 'ready' && time" class="content">
+    <div class="card">
+      <div class="card-title">Dados do time</div>
+      <div class="kv">
+        <div class="row">
+          <div class="label">ID</div>
+          <div class="value">{{ time.id }}</div>
+        </div>
+        <div class="row">
+          <div class="label">Nome</div>
+          <div class="value">{{ time.nome || '—' }}</div>
+        </div>
+        <div class="row">
+          <div class="label">Sigla</div>
+          <div class="value">{{ time.sigla || '—' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" *ngIf="time.jogadors?.length">
+      <div class="card-title">Jogadores</div>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Carteira Stellar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let jogador of time.jogadors">
+              <td>{{ jogador.id }}</td>
+              <td>{{ jogador.nome }}</td>
+              <td>{{ jogador.carteiraStellar || '—' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" *ngIf="time.timeJogos?.length">
+      <div class="card-title">Jogos</div>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Jogo</th>
+              <th>Pontuação</th>
+              <th>Vencedor</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let jogo of time.timeJogos">
+              <td>#{{ jogo.idJogo }}</td>
+              <td>{{ jogo.pontuacao }}</td>
+              <td>{{ jogo.vencedor ? 'Sim' : 'Não' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>

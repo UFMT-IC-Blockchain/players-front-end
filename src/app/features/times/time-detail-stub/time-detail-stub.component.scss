@@ -20,17 +20,127 @@
   }
 }
 
-.card {
+.state {
   max-width: 980px;
   margin: 0 auto;
-  background: #fff;
   border-radius: 8px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
   padding: 1rem 1.25rem;
-  color: #666;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+
+  &.loading {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #666;
+  }
+
+  &.error {
+    background: #f8d7da;
+    color: #dc3545;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
 
   p {
     margin: 0;
+  }
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  border-top-color: rgba(0, 0, 0, 0.5);
+  animation: spin 800ms linear infinite;
+}
+
+.content {
+  max-width: 980px;
+  margin: 0 auto;
+  display: grid;
+  gap: 1rem;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  padding: 1rem 1.25rem;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.card-title {
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 0.75rem;
+}
+
+.kv {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 0.75rem;
+  align-items: baseline;
+}
+
+.label {
+  color: #666;
+  font-weight: 600;
+}
+
+.value {
+  color: #333;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.table-wrap {
+  overflow: auto;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+
+  th,
+  td {
+    text-align: left;
+    padding: 0.75rem 0.85rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    white-space: nowrap;
+  }
+
+  th {
+    background: rgba(0, 0, 0, 0.03);
+    color: #333;
+    font-weight: 700;
+  }
+
+  td {
+    color: #666;
+  }
+
+  tbody tr:hover td {
+    background: rgba(0, 123, 255, 0.06);
+    color: #333;
   }
 }
 
@@ -44,4 +154,36 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  transition: background 160ms ease, transform 160ms ease;
+
+  &:hover {
+    background: rgba(0, 123, 255, 0.08);
+    transform: translateY(-1px);
+  }
+}
+
+.btn-primary {
+  background: #007bff;
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  padding: 0.55rem 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: filter 160ms ease, transform 160ms ease;
+
+  &:hover {
+    filter: brightness(1.03);
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

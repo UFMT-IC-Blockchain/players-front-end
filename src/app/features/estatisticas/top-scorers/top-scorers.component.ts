@@ -12,6 +12,8 @@ import {
 } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { EstatisticasService, TopScorer } from '../../../core/services/estatisticas.service';
+import { AlertComponent } from '../../../shared/components/alert/alert.component';
+import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
 
 type TopScorersState =
   | { status: 'idle' }
@@ -36,7 +38,7 @@ const integerValidator: ValidatorFn = (
 @Component({
   selector: 'app-top-scorers',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, AlertComponent, SpinnerComponent],
   templateUrl: './top-scorers.component.html',
   styleUrls: ['./top-scorers.component.scss']
 })

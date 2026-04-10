@@ -11,6 +11,8 @@ import {
   Validators
 } from '@angular/forms';
 import { Recompensa, RecompensasService } from '../../core/services/recompensas.service';
+import { AlertComponent } from '../../shared/components/alert/alert.component';
+import { SpinnerComponent } from '../../shared/components/spinner/spinner.component';
 
 type TabKey = 'geral' | 'jogador' | 'jogo' | 'status';
 
@@ -53,7 +55,7 @@ const trimmedRequiredValidator: ValidatorFn = (
 @Component({
   selector: 'app-recompensas',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, AlertComponent, SpinnerComponent],
   templateUrl: './recompensas.component.html',
   styleUrls: ['./recompensas.component.scss']
 })

@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { AlertComponent } from '../../../shared/components/alert/alert.component';
+import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, AlertComponent, SpinnerComponent],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })

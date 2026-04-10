@@ -6,6 +6,8 @@ import { AuthService } from '../../../core/services/auth.service';
 import { JogoService } from '../../../core/services/jogo.service';
 import { JogoComDetalhes } from '../../../core/models/jogo.model';
 import { RolesService } from '../../../core/services/roles.service';
+import { AlertComponent } from '../../../shared/components/alert/alert.component';
+import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
 
 type ResultadosState = {
   status: 'idle' | 'loading' | 'loaded' | 'error';
@@ -15,7 +17,7 @@ type ResultadosState = {
 @Component({
   selector: 'app-list-jogos',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, AlertComponent, SpinnerComponent],
   templateUrl: './list-jogos.component.html',
   styleUrls: ['./list-jogos.component.scss']
 })

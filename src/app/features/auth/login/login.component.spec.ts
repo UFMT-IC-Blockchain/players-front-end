@@ -24,7 +24,7 @@ describe('LoginComponent', () => {
   let originalConsoleError: typeof console.error;
 
   const authServiceMock: Pick<AuthService, 'login' | 'setToken'> = {
-    login: (credentials: { login: string; senha?: string }) => {
+    login: (credentials: { login: string; senha: string }) => {
       lastLoginPayload = credentials;
       return loginResponse$;
     },
@@ -108,7 +108,8 @@ describe('LoginComponent', () => {
     fixture.detectChanges();
 
     expect(component.isLoading).toBe(false);
-    expect(component.errorMessage).toBe('Credenciais inválidas. Verifique seu usuário e senha.');
+    expect(component.alertType).toBe('error');
+    expect(component.alertMessage).toBe('Credenciais inválidas. Verifique seu usuário e senha.');
 
     const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
     expect(text.includes('Credenciais inválidas.')).toBe(true);

@@ -1,8 +1,8 @@
 <div class="login-container">
   <div class="login-card">
-    <h2>Login</h2>
+    <h2>{{ mode === 'login' ? 'Login' : 'Cadastro' }}</h2>
     
-    <app-alert *ngIf="errorMessage" type="error" [message]="errorMessage"></app-alert>
+    <app-alert *ngIf="alertMessage" [type]="alertType" [message]="alertMessage"></app-alert>
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       
@@ -35,10 +35,16 @@
       </div>
 
       <button type="submit" [disabled]="loginForm.invalid || isLoading" class="btn-primary">
-        <span *ngIf="!isLoading">Entrar</span>
+        <span *ngIf="!isLoading">{{ mode === 'login' ? 'Entrar' : 'Cadastrar' }}</span>
         <app-spinner *ngIf="isLoading" [inline]="true" size="sm" label="Carregando..."></app-spinner>
       </button>
       
     </form>
+
+    <div class="secondary-actions">
+      <button type="button" class="btn-link" (click)="toggleMode()" [disabled]="isLoading">
+        {{ mode === 'login' ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Entrar' }}
+      </button>
+    </div>
   </div>
 </div>

@@ -9,6 +9,11 @@ export interface LoginResponse {
   access_token: string;
 }
 
+export type UsuarioResponse = {
+  id?: number | string;
+  login?: string;
+} & Record<string, unknown>;
+
 type JwtTokenPayload = {
   exp?: number;
   roles?: unknown;
@@ -83,8 +88,12 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  login(credentials: { login: string; senha?: string }): Observable<LoginResponse> {
+  login(credentials: { login: string; senha: string }): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, credentials);
+  }
+
+  register(payload: { login: string; senha: string }): Observable<UsuarioResponse> {
+    return this.http.post<UsuarioResponse>(`${this.apiUrl}/usuario`, payload);
   }
 
   setToken(token: string): void {

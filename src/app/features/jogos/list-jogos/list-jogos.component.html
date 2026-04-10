@@ -4,10 +4,12 @@
       <h2>Lista de Jogos</h2>
       <p>Acompanhe o histórico de partidas e os resultados</p>
     </div>
-    <button class="btn-primary" routerLink="/jogos/criar">
+    <button *ngIf="canCreateJogo" class="btn-primary" routerLink="/jogos/criar">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
       Novo Jogo
     </button>
+    <span *ngIf="adminGateStatus === 'loading'" class="permission-hint">Verificando permissão...</span>
+    <span *ngIf="adminGateStatus === 'error'" class="permission-hint permission-error">{{ adminGateErrorMessage }}</span>
   </div>
 
   <div *ngIf="isLoading" class="loading-state">
@@ -24,8 +26,9 @@
   <div *ngIf="!isLoading && jogos.length === 0" class="empty-state glass-card">
     <div class="empty-icon">🎮</div>
     <h3>Nenhum jogo encontrado</h3>
-    <p>Comece criando o primeiro jogo da temporada!</p>
-    <button class="btn-primary" routerLink="/jogos/criar">Criar Jogo</button>
+    <p *ngIf="canCreateJogo">Comece criando o primeiro jogo da temporada!</p>
+    <p *ngIf="!canCreateJogo">Você não tem permissão para criar jogos.</p>
+    <button *ngIf="canCreateJogo" class="btn-primary" routerLink="/jogos/criar">Criar Jogo</button>
   </div>
 
   <div *ngIf="!isLoading && jogos.length > 0" class="cards-grid">

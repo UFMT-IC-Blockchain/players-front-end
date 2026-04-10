@@ -1,0 +1,32 @@
+<div class="times-page">
+  <div class="header">
+    <h1>Times</h1>
+  </div>
+
+  <div *ngIf="status === 'loading'" class="state loading" role="status" aria-live="polite">
+    <span class="spinner" aria-hidden="true"></span>
+    <p>Carregando times...</p>
+  </div>
+
+  <div *ngIf="status === 'error'" class="state error" role="alert">
+    <p>{{ errorMessage }}</p>
+    <button type="button" class="btn-primary" (click)="loadTimes()">Tentar novamente</button>
+  </div>
+
+  <div *ngIf="status === 'empty'" class="state empty" role="status">
+    <p>Nenhum time encontrado.</p>
+  </div>
+
+  <div *ngIf="status === 'ready'" class="grid">
+    <div class="card" *ngFor="let time of times; trackBy: trackByTimeId">
+      <div class="card-main">
+        <div class="title">
+          <span class="name">{{ time.nome || ('Time #' + time.id) }}</span>
+          <span class="sigla" *ngIf="time.sigla">{{ time.sigla }}</span>
+        </div>
+        <div class="meta">ID: {{ time.id }}</div>
+      </div>
+      <a class="btn-outline" [routerLink]="['/times', time.id]">Detalhes</a>
+    </div>
+  </div>
+</div>

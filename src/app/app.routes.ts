@@ -27,6 +27,16 @@ export const routes: Routes = [
     loadComponent: () => import('./features/jogos/jogo-detail/jogo-detail.component').then(m => m.JogoDetailComponent)
   },
   {
+    path: 'times/:id',
+    canMatch: [authGuard],
+    loadComponent: () => import('./features/times/time-detail-stub/time-detail-stub.component').then(m => m.TimeDetailStubComponent)
+  },
+  {
+    path: 'times',
+    canMatch: [authGuard],
+    loadComponent: () => import('./features/times/list-times/list-times.component').then(m => m.ListTimesComponent)
+  },
+  {
     path: '',
     redirectTo: 'jogos',
     pathMatch: 'full'

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Time } from '../models/time.model';
+import { Time, TimeDetail } from '../models/time.model';
 
 @Injectable({
   providedIn: 'root'
@@ -14,5 +14,9 @@ export class TimesService {
 
   getTimes(): Observable<Time[]> {
     return this.http.get<Time[]>(`${this.apiUrl}/times`);
+  }
+
+  getTimeById(id: number): Observable<TimeDetail> {
+    return this.http.get<TimeDetail>(`${this.apiUrl}/times/${id}`);
   }
 }

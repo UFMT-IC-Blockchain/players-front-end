@@ -2,9 +2,7 @@
   <div class="login-card">
     <h2>Login</h2>
     
-    <div class="error-alert" *ngIf="errorMessage">
-      {{ errorMessage }}
-    </div>
+    <app-alert *ngIf="errorMessage" type="error" [message]="errorMessage"></app-alert>
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       
@@ -38,7 +36,7 @@
 
       <button type="submit" [disabled]="loginForm.invalid || isLoading" class="btn-primary">
         <span *ngIf="!isLoading">Entrar</span>
-        <span *ngIf="isLoading">Carregando...</span>
+        <app-spinner *ngIf="isLoading" [inline]="true" size="sm" label="Carregando..."></app-spinner>
       </button>
       
     </form>

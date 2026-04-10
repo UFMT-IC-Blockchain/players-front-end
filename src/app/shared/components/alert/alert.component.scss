@@ -1,0 +1,82 @@
+.alert {
+  display: grid;
+  grid-template-columns: 18px 1fr auto auto;
+  align-items: start;
+  gap: 0.75rem;
+  padding: 0.95rem 1.1rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  background: #fff;
+}
+
+.icon {
+  margin-top: 0.1rem;
+}
+
+.content {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.title {
+  font-weight: 800;
+  color: var(--app-alert-title-color, #333);
+}
+
+.message {
+  color: var(--app-alert-message-color, #666);
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dismiss {
+  border: 0;
+  background: transparent;
+  color: currentColor;
+  padding: 0.25rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.dismiss:hover {
+  background: rgba(0, 0, 0, 0.04);
+  transform: translateY(-1px);
+}
+
+.dismiss:active {
+  transform: translateY(0);
+}
+
+:host(.type-error) .alert {
+  background: var(--app-alert-error-bg, #f8d7da);
+  border-color: var(--app-alert-error-border, #f5c6cb);
+  color: var(--app-alert-error-color, #dc3545);
+}
+
+:host(.type-success) .alert {
+  background: var(--app-alert-success-bg, rgba(40, 167, 69, 0.12));
+  border-color: var(--app-alert-success-border, rgba(40, 167, 69, 0.24));
+  color: var(--app-alert-success-color, #28a745);
+}
+
+:host(.type-info) .alert {
+  background: var(--app-alert-info-bg, rgba(0, 123, 255, 0.1));
+  border-color: var(--app-alert-info-border, rgba(0, 123, 255, 0.24));
+  color: var(--app-alert-info-color, #007bff);
+}
+
+:host(.type-error) .message,
+:host(.type-success) .message,
+:host(.type-info) .message {
+  color: currentColor;
+}

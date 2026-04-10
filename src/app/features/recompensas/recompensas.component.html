@@ -59,7 +59,7 @@
           >
             <span *ngIf="activeState.status !== 'loading'">Carregar</span>
             <span *ngIf="activeState.status === 'loading'" class="loading-inline">
-              <span class="spinner" aria-hidden="true"></span>
+              <app-spinner [inline]="true" size="sm"></app-spinner>
               Carregando...
             </span>
           </button>
@@ -91,7 +91,7 @@
           <button type="submit" class="btn-primary" [disabled]="jogadorForm.invalid || activeState.status === 'loading'">
             <span *ngIf="activeState.status !== 'loading'">Buscar</span>
             <span *ngIf="activeState.status === 'loading'" class="loading-inline">
-              <span class="spinner" aria-hidden="true"></span>
+              <app-spinner [inline]="true" size="sm"></app-spinner>
               Buscando...
             </span>
           </button>
@@ -123,7 +123,7 @@
           <button type="submit" class="btn-primary" [disabled]="jogoForm.invalid || activeState.status === 'loading'">
             <span *ngIf="activeState.status !== 'loading'">Buscar</span>
             <span *ngIf="activeState.status === 'loading'" class="loading-inline">
-              <span class="spinner" aria-hidden="true"></span>
+              <app-spinner [inline]="true" size="sm"></app-spinner>
               Buscando...
             </span>
           </button>
@@ -151,7 +151,7 @@
           <button type="submit" class="btn-primary" [disabled]="statusForm.invalid || activeState.status === 'loading'">
             <span *ngIf="activeState.status !== 'loading'">Buscar</span>
             <span *ngIf="activeState.status === 'loading'" class="loading-inline">
-              <span class="spinner" aria-hidden="true"></span>
+              <app-spinner [inline]="true" size="sm"></app-spinner>
               Buscando...
             </span>
           </button>
@@ -165,16 +165,12 @@
   </div>
 
   <div *ngIf="activeState.status === 'loading'" class="state loading" role="status" aria-live="polite">
-    <span class="spinner-on-surface" aria-hidden="true"></span>
-    <p>Carregando resultados...</p>
+    <app-spinner size="md" label="Carregando resultados..."></app-spinner>
   </div>
 
-  <div *ngIf="activeState.status === 'error'" class="state error" role="alert">
-    <p>{{ activeState.message }}</p>
-    <button type="button" class="btn-primary" (click)="onRetry()">
-      Tentar novamente
-    </button>
-  </div>
+  <app-alert *ngIf="activeState.status === 'error'" type="error" [message]="activeState.message" role="alert">
+    <button actions type="button" class="btn-primary" (click)="onRetry()">Tentar novamente</button>
+  </app-alert>
 
   <div *ngIf="activeState.status === 'empty'" class="state empty" role="status">
     <p>Nenhuma recompensa encontrada.</p>

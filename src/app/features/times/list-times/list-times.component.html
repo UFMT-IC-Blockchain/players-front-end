@@ -4,14 +4,13 @@
   </div>
 
   <div *ngIf="status === 'loading'" class="state loading" role="status" aria-live="polite">
-    <span class="spinner" aria-hidden="true"></span>
+    <app-spinner [inline]="true" size="sm"></app-spinner>
     <p>Carregando times...</p>
   </div>
 
-  <div *ngIf="status === 'error'" class="state error" role="alert">
-    <p>{{ errorMessage }}</p>
-    <button type="button" class="btn-primary" (click)="loadTimes()">Tentar novamente</button>
-  </div>
+  <app-alert *ngIf="status === 'error'" type="error" [message]="errorMessage" role="alert">
+    <button actions type="button" class="btn-primary" (click)="loadTimes()">Tentar novamente</button>
+  </app-alert>
 
   <div *ngIf="status === 'empty'" class="state empty" role="status">
     <p>Nenhum time encontrado.</p>

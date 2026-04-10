@@ -5,6 +5,20 @@
   animation: fadeIn 0.6s ease-out;
 }
 
+app-spinner {
+  --app-spinner-track: rgba(255, 255, 255, 0.18);
+  --app-spinner-accent: var(--primary);
+  --app-spinner-label-color: var(--text-secondary);
+}
+
+app-alert {
+  --app-alert-error-bg: rgba(239, 68, 68, 0.08);
+  --app-alert-error-border: rgba(239, 68, 68, 0.25);
+  --app-alert-error-color: #fca5a5;
+  --app-alert-title-color: #f8fafc;
+  --app-alert-message-color: rgba(248, 250, 252, 0.85);
+}
+
 .header-section {
   display: flex;
   justify-content: space-between;

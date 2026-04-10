@@ -14,6 +14,8 @@ import { JogoService } from '../../../core/services/jogo.service';
 import { Jogo, MatchResult, MatchWinnerResult } from '../../../core/models/jogo.model';
 import { forkJoin, of, switchMap } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { AlertComponent } from '../../../shared/components/alert/alert.component';
+import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
 
 type RegisterState =
   | { status: 'idle' }
@@ -45,7 +47,7 @@ const integerValidator = (): ValidatorFn => {
 @Component({
   selector: 'app-jogo-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, AlertComponent, SpinnerComponent],
   templateUrl: './jogo-detail.component.html',
   styleUrls: ['./jogo-detail.component.scss']
 })

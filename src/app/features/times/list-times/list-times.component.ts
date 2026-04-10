@@ -3,11 +3,13 @@ import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { TimesService } from '../../../core/services/times.service';
 import { Time } from '../../../core/models/time.model';
+import { AlertComponent } from '../../../shared/components/alert/alert.component';
+import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
 
 @Component({
   selector: 'app-list-times',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, AlertComponent, SpinnerComponent],
   templateUrl: './list-times.component.html',
   styleUrls: ['./list-times.component.scss']
 })

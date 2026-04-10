@@ -29,7 +29,7 @@ export const routes: Routes = [
   {
     path: 'times/:id',
     canMatch: [authGuard],
-    loadComponent: () => import('./features/times/time-detail-stub/time-detail-stub.component').then(m => m.TimeDetailStubComponent)
+    loadComponent: () => import('./features/times/time-detail-stub/time-detail-stub.component').then(m => m.TimeDetailComponent)
   },
   {
     path: 'times',

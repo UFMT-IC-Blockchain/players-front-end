@@ -4,7 +4,11 @@
 ## Prompt (Autoexecutável) — Resolver Issues no `players-front-end`
 
 ### Gatilho inicial (OBRIGATÓRIO)
-Ao abrir este arquivo, você **DEVE começar imediatamente** a resolver a próxima issue do repositório `players-front-end`.
+Ao abrir este arquivo, você **DEVE começar imediatamente** a resolver a próxima issue do repositório `players-front-end` e **executar o ciclo completo automaticamente, sem intervenção humana**, até:
+- PR **mergeado** na `main`
+- Branch **removida**
+- `main` **atualizada localmente**
+- Issue **fechada** (automática via `Closes #ID`, ou fechada manualmente como fallback)
 
 Regra de foco: **não mude de contexto** e **não inicie outra issue** até que a issue atual esteja com **PR mergeado** e **issue fechada**.
 
@@ -13,27 +17,93 @@ Regra de foco: **não mude de contexto** e **não inicie outra issue** até que 
 - **UI Premium:** aplique padrões premium (glass, micro-interações, responsivo, tipografia/spacing), **mas respeite a paleta/layout definidos na issue** quando houver conflito.
 - **Qualidade:** evitar `any`, remover imports não usados, manter tipagem e estados de UI (loading/erro/vazio).
 - **Windows/PowerShell:** evite `&&` e prefira comandos em linhas separadas.
+- **Não-interativo:** não use comandos que abrem editor; use flags e bodies inline.
+- **Idempotência:** se branch/PR já existir, **reusar** em vez de recriar.
+- **Merge automático:** só merge quando checks estiverem verdes (usar auto-merge).
 
-### 1) Identificação e Preparação (comece por aqui)
+### 1) Auto-configuração (sem perguntas / sem placeholders)
 1. Garanta que está em `players-front-end`.
-2. Descubra o repositório remoto (para usar `OWNER/REPO` corretamente).
-3. Liste issues abertas e selecione a próxima na sequência lógica.
-4. Atualize a `main` e crie branch no padrão `feature/front-[issueId]-[resumo-curto-kebab]`.
+2. Descubra automaticamente o repositório (`OWNER/REPO`) a partir do `git remote`.
+3. Selecione a próxima issue de forma determinística (evitar escolhas arbitrárias).
+4. Atualize a `main` e crie/reuse branch no padrão `feature/front-[issueId]-[resumo-curto-kebab]`.
+5. Execute implementação, build, testes, commit, push, PR, validação, auto-merge, pós-merge e fechamento.
 
-**PowerShell (Windows) — comandos padrão**
+**PowerShell (Windows) — fluxo automatizado (idempotente)**
 ```powershell
 cd C:\Users\helio\source\repos\Gerenciamento-Jogos-Front-Back\players-front-end
 
-git remote -v
+gh auth status
 
-# Substitua OWNER/REPO pelo remoto correto (ex.: UFMT-IC-Blockchain/players-front-end)
-gh issue list --repo OWNER/REPO --state open --limit 20
+$Repo = gh repo view --json nameWithOwner -q .nameWithOwner
+$Repo
 
 git checkout main
 git fetch origin
 git pull --ff-only origin main
 
-git checkout -b feature/front-<ID>-<resumo>
+# Seleção determinística:
+# - Prioriza `area:frontend` se existir
+# - Fallback: menor número entre issues abertas
+$IssueId = gh issue list --repo $Repo --state open --label "area:frontend" --limit 200 --json number --jq "map(.number) | min"
+if (-not $IssueId) {
+  $IssueId = gh issue list --repo $Repo --state open --limit 200 --json number --jq "map(.number) | min"
+}
+
+gh issue view $IssueId --repo $Repo --json number,title,labels,url
+
+$IssueTitle = gh issue view $IssueId --repo $Repo --json title --jq .title
+$Slug = $IssueTitle.ToLowerInvariant()
+$Slug = $Slug -replace "[^a-z0-9]+","-"
+$Slug = $Slug.Trim("-")
+if ($Slug.Length -gt 32) { $Slug = $Slug.Substring(0, 32).Trim("-") }
+
+$Branch = "feature/front-$IssueId-$Slug"
+
+git checkout -B $Branch
+
+# IMPLEMENTE A ISSUE AQUI (sem intervenção humana):
+# - faça mudanças mínimas conforme a issue
+# - evite `any`, mantenha tipagem e estados
+# - para telas: estados `idle | loading | ready | empty | error`
+
+npm run build
+npm test -- --watch=false --browsers=ChromeHeadless
+
+git add -A
+git commit -m "feat: resolver #$IssueId"
+git push -u origin HEAD
+
+# Reusa PR se já existir para este branch; senão cria
+$PrNumber = gh pr list --repo $Repo --head $Branch --json number --jq ".[0].number"
+if (-not $PrNumber) {
+  gh pr create --repo $Repo `
+    --base main `
+    --title "feat: $IssueTitle" `
+    --body @"
+## O que mudou
+- ...
+
+## Por que mudou
+- ...
+
+## Contexto
+Closes #$IssueId
+"@
+  $PrNumber = gh pr list --repo $Repo --head $Branch --json number --jq ".[0].number"
+}
+
+# Validação crítica: o PR precisa referenciar a issue para fechamento automático
+gh pr view $PrNumber --repo $Repo --json number,state,closingIssuesReferences,url
+
+# Auto-merge (aguarda checks ficarem verdes e mergeia sozinho)
+gh pr merge $PrNumber --repo $Repo --merge --auto --delete-branch
+
+git checkout main
+git pull --ff-only origin main
+git branch -D $Branch
+
+# Confirmar issue fechada
+gh issue view $IssueId --repo $Repo --json state,closedAt,url
 ```
 
 ### 2) Implementação (Angular)
@@ -43,74 +113,15 @@ git checkout -b feature/front-<ID>-<resumo>
 - **Estados de tela:** `idle | loading | ready | empty | error` com mensagens claras.
 - **Validações:** implementar conforme issue e **não chamar API** quando inválido.
 
-### 3) Verificações locais (antes de commit)
-```powershell
-npm run build
-npm test -- --watch=false --browsers=ChromeHeadless
-```
-
-### 4) Commits Atômicos
-- Commits pequenos e semânticos (`feat:`, `fix:`, `chore:`, `test:`).
-```powershell
-git add -A
-git commit -m "feat: <descrição objetiva>"
-```
-
-### 5) Sincronização com `main` (antes de abrir PR)
-```powershell
-git fetch origin
-git merge origin/main
-```
-- Se houver conflitos: resolver manualmente e repetir `npm run build` e `npm test`.
-
-### 6) PR (criação + validação de fechamento)
-Crie PR com corpo obrigatório contendo:
-- **O que mudou**
-- **Por que mudou** (arquivo → motivo técnico)
-- **Contexto**: `Closes #<ID>`
-
-```powershell
-git push -u origin HEAD
-
-gh pr create --repo OWNER/REPO `
-  --base main `
-  --title "feat: <título>" `
-  --body @"
-## O que mudou
-- ...
-
-## Por que mudou
-- `caminho/arquivo`: ...
-
-## Contexto
-Closes #<ID>
-"@
-
-# Validação crítica: o PR precisa referenciar a issue para fechamento automático
-gh pr view --repo OWNER/REPO --json number,state,closingIssuesReferences
-```
-
-Se `closingIssuesReferences` vier vazio, corrija o corpo com `gh pr edit`.
-
-### 7) Merge e Pós-merge (encerrar o ciclo)
-```powershell
-# Use o número do PR retornado na criação
-
-gh pr merge <NUMERO_PR> --repo OWNER/REPO --merge --delete-branch
-
-git checkout main
-git pull --ff-only origin main
-git branch -D feature/front-<ID>-<resumo>
-
-# Confirmar issue fechada
-
-gh issue view <ID> --repo OWNER/REPO --json state,closedAt
-```
-
-Se a issue ainda estiver aberta, feche manualmente:
-```powershell
-gh issue close <ID> --repo OWNER/REPO --comment "Resolvido via PR #<NUMERO_PR>."
-```
+### 3) Regras de Execução (para ficar 100% automático)
+- **Sem prompts:** não pedir para substituir `OWNER/REPO` ou escolher issue; derive tudo via `gh repo view` e `gh issue list`.
+- **Fail fast:** se `npm run build` ou `npm test` falhar, parar e corrigir antes de criar/atualizar PR.
+- **Idempotente:** reexecutar o fluxo deve:
+  - reusar o mesmo branch (via `git checkout -B`)
+  - reusar o mesmo PR (via `gh pr list --head`)
+  - não criar duplicatas
+- **Fechamento automático:** sempre incluir `Closes #$IssueId` no body do PR e validar `closingIssuesReferences`.
+- **Merge automático:** usar `gh pr merge --auto` para aguardar checks e mergear sem intervenção humana.
 
 ### 8) Submódulo / Repositório Pai (apenas se existir)
 - Verificar se existe repo Git pai/superproject e, se existir, commitar a referência do submódulo.

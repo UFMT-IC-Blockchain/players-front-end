@@ -1,0 +1,70 @@
+<div class="page">
+  <div class="header">
+    <a class="btn-outline" routerLink="/jogos">Voltar</a>
+    <h1>Buscar jogador</h1>
+  </div>
+
+  <div class="card">
+    <form [formGroup]="form" (ngSubmit)="onBuscar()" class="form">
+      <div class="field">
+        <label for="wallet">Carteira Stellar</label>
+        <input
+          id="wallet"
+          type="text"
+          class="input"
+          formControlName="wallet"
+          placeholder="G... (56 caracteres)"
+          autocomplete="off"
+          spellcheck="false"
+          [attr.aria-invalid]="walletCtrl.touched && walletCtrl.invalid ? true : null"
+        />
+
+        <div class="hint" *ngIf="walletCtrl.touched && walletCtrl.invalid" role="alert">
+          <div *ngIf="walletCtrl.errors?.['required']">Informe a carteira Stellar.</div>
+          <div *ngIf="walletCtrl.errors?.['pattern']">
+            Carteira inválida. Use o padrão ^G[A-Z2-7]{{ '{' }}55{{ '}' }}$.
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn-primary" [disabled]="form.invalid || state.status === 'loading'">
+          <span *ngIf="state.status !== 'loading'">Buscar</span>
+          <span *ngIf="state.status === 'loading'" class="loading-inline">
+            <span class="spinner" aria-hidden="true"></span>
+            Buscando...
+          </span>
+        </button>
+        <button type="button" class="btn-ghost" (click)="onLimpar()" [disabled]="state.status === 'loading'">
+          Limpar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div *ngIf="state.status === 'ready'" class="card result">
+    <div class="card-title">Resultado</div>
+    <div class="kv">
+      <div class="row">
+        <div class="label">ID</div>
+        <div class="value">{{ state.jogador.id }}</div>
+      </div>
+      <div class="row">
+        <div class="label">Nome</div>
+        <div class="value">{{ state.jogador.nome }}</div>
+      </div>
+      <div class="row">
+        <div class="label">Carteira Stellar</div>
+        <div class="value">{{ state.jogador.carteiraStellar || '—' }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="state.status === 'not_found'" class="state error" role="alert">
+    <p>Jogador não encontrado.</p>
+  </div>
+
+  <div *ngIf="state.status === 'error'" class="state error" role="alert">
+    <p>{{ state.message }}</p>
+  </div>
+</div>

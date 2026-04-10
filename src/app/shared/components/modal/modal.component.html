@@ -9,7 +9,7 @@
     </div>
     <div class="modal-footer">
       <button class="btn-secondary" (click)="onClose()">{{ cancelText }}</button>
-      <button class="btn-primary" (click)="onConfirm()">{{ confirmText }}</button>
+      <button class="btn-primary" [class.danger]="isDanger" (click)="onConfirm()">{{ confirmText }}</button>
     </div>
   </div>
 </div>

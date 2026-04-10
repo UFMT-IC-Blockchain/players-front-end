@@ -27,7 +27,8 @@ export class JogoService {
         results.map((res) => ({
           timeId: res.idTime,
           pontuacao: res.pontuacao,
-          vencedor: res.vencedor
+          vencedor: res.vencedor,
+          idJogo: res.idJogo
         } as MatchResult))
       )
     );

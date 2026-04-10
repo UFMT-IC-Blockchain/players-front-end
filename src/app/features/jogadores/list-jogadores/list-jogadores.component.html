@@ -55,25 +55,27 @@
   [isOpen]="isModalOpen"
   [title]="jogadorToDelete ? 'Excluir Jogador' : (isEditing ? 'Editar Jogador' : 'Novo Jogador')"
   [confirmText]="jogadorToDelete ? 'Excluir' : 'Salvar'"
+  [isDanger]="!!jogadorToDelete"
   (confirmed)="confirmAction()"
   (closed)="closeModal()"
 >
   <div *ngIf="jogadorToDelete">
-    Tem certeza que deseja excluir o jogador <strong>{{ jogadorToDelete.nome }}</strong>?
+    <p>Tem certeza que deseja excluir o jogador <strong>{{ jogadorToDelete.nome }}</strong>?</p>
+    <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">Esta ação não pode ser desfeita.</p>
   </div>
   
   <div *ngIf="!jogadorToDelete" class="modern-form">
     <div class="form-group">
-      <label>Nome Completo</label>
-      <input type="text" [(ngModel)]="form.nome" class="form-control" placeholder="Ex: João Silva">
+      <label for="playerName">Nome Completo</label>
+      <input type="text" id="playerName" [(ngModel)]="form.nome" class="input-field" placeholder="Ex: João Silva">
     </div>
     <div class="form-group">
-      <label>Carteira Stellar (G...)</label>
-      <input type="text" [(ngModel)]="form.wallet" class="form-control" placeholder="G...">
+      <label for="playerWallet">Carteira Stellar (G...)</label>
+      <input type="text" id="playerWallet" [(ngModel)]="form.wallet" class="input-field" placeholder="G...">
     </div>
     <div class="form-group">
-      <label>Time Vinculado</label>
-      <select [(ngModel)]="form.timeId" class="form-control">
+      <label for="playerTeam">Time Vinculado</label>
+      <select id="playerTeam" [(ngModel)]="form.timeId" class="input-field">
         <option [ngValue]="null">Nenhum</option>
         <option *ngFor="let t of times" [ngValue]="t.id">{{ t.nome }}</option>
       </select>

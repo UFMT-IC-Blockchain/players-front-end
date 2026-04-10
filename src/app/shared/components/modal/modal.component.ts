@@ -13,6 +13,7 @@ export class ModalComponent {
   @Input() title = 'Confirmação';
   @Input() confirmText = 'Confirmar';
   @Input() cancelText = 'Cancelar';
+  @Input() isDanger = false;
 
   @Output() confirmed = new EventEmitter<void>();
   @Output() closed = new EventEmitter<void>();

@@ -75,10 +75,26 @@
   }
 
   .btn-primary {
-    background: #ef4444; // Red for logout/danger actions
+    background: var(--primary);
     border: none;
     color: #fff;
-    &:hover { background: #dc2626; transform: translateY(-2px); }
+    box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
+
+    &:hover { 
+      background: var(--primary-hover); 
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+    }
+
+    &.danger {
+      background: #ef4444;
+      box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2);
+      
+      &:hover {
+        background: #dc2626;
+        box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.3);
+      }
+    }
   }
 }
 

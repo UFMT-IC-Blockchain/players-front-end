@@ -33,6 +33,22 @@
     align-items: center;
     gap: 0.5rem;
   }
+
+  .permission-hint {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    white-space: nowrap;
+  }
+
+  .permission-error {
+    color: #fca5a5;
+    border-color: rgba(239, 68, 68, 0.25);
+    background: rgba(239, 68, 68, 0.08);
+  }
 }
 
 .loading-state {

@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { guestGuard } from './core/guards/guest.guard';
-import { authGuard } from './core/guards/auth.guards';
+import { adminGuard, authGuard } from './core/guards/auth.guards';
 
 export const routes: Routes = [
   {
@@ -32,7 +32,7 @@ export const routes: Routes = [
   },
   {
     path: 'jogos/criar',
-    canMatch: [authGuard],
+    canMatch: [authGuard, adminGuard],
     loadComponent: () => import('./features/jogos/criacao-jogo/criacao-jogo.component').then(m => m.CriacaoJogoComponent)
   },
   {

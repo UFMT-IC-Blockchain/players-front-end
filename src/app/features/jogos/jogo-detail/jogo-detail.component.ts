@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import {
@@ -16,6 +16,9 @@ import { forkJoin, of, switchMap } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AlertComponent } from '../../../shared/components/alert/alert.component';
 import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
+import { AuthService } from '../../../core/services/auth.service';
+import { TimesService } from '../../../core/services/times.service';
+import { Time } from '../../../core/models/time.model';
 
 type RegisterState =
   | { status: 'idle' }
@@ -40,7 +43,7 @@ const integerValidator = (): ValidatorFn => {
     if (value === null || value === undefined || value === '') {
       return null;
     }
-    return Number.isInteger(value) ? null : { integer: true };
+    return Number.isInteger(Number(value)) ? null : { integer: true };
   };
 };
 
@@ -61,22 +64,19 @@ export class JogoDetailComponent implements OnInit {
   resultadoForm: ResultadoFormGroup;
   private jogoId: number | null = null;
 
+  isAdmin = false;
+  allTeams: Time[] = [];
+
+  private route = inject(ActivatedRoute);
+  private jogoService = inject(JogoService);
+  private authService = inject(AuthService);
+  private timesService = inject(TimesService);
+
   get winnerReady(): MatchWinnerResult | null {
     return this.winnerState.status === 'ready' ? this.winnerState.data : null;
   }
 
-  get winnerEmptyMessage(): string | null {
-    return this.winnerState.status === 'empty' ? this.winnerState.message : null;
-  }
-
-  get winnerErrorMessage(): string | null {
-    return this.winnerState.status === 'error' ? this.winnerState.message : null;
-  }
-
-  constructor(
-    private route: ActivatedRoute,
-    private jogoService: JogoService
-  ) {
+  constructor() {
     this.resultadoForm = new FormGroup({
       timeId: new FormControl<number | null>(null, {
         validators: [Validators.required, Validators.min(1), integerValidator()]
@@ -93,6 +93,7 @@ export class JogoDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.isAdmin = this.authService.hasRoleFromToken('ADMIN') ?? false;
     const idParam = this.route.snapshot.paramMap.get('id');
     const id = Number(idParam);
     
@@ -103,138 +104,61 @@ export class JogoDetailComponent implements OnInit {
     }
 
     this.jogoId = id;
-    this.registerState = { status: 'idle' };
-    this.winnerState = { status: 'loading' };
+    this.loadData();
+    if (this.isAdmin) {
+      this.loadTeams();
+    }
+  }
 
+  loadTeams(): void {
+    this.timesService.getTimes().subscribe(teams => {
+      this.allTeams = teams;
+    });
+  }
+
+  loadData(): void {
+    if (!this.jogoId) return;
+    
+    this.loading = true;
     forkJoin({
-      jogo: this.jogoService.getJogoById(id).pipe(
-        catchError(err => {
-          if (err.status === 404) {
-            this.error = 'Jogo não encontrado';
-          } else {
-            this.error = 'Erro ao carregar o jogo';
-          }
-          console.error('Erro ao carregar jogo:', err);
-          return of(null);
-        })
-      ),
-      resultados: this.jogoService.getJogoResultados(id).pipe(
-        catchError(err => {
-          console.error('Erro ao carregar resultados:', err);
-          return of([]);
-        })
-      ),
-      winnerState: this.jogoService.getJogoWinner(id).pipe(
-        switchMap((winner) => {
-          if (winner.empate) {
-            return of({ status: 'ready', data: winner } as const);
-          }
-          if (winner.vencedorTimeId === null) {
-            return of({
-              status: 'empty',
-              message: 'Vencedor ainda não definido.'
-            } as const);
-          }
-          return of({ status: 'ready', data: winner } as const);
-        }),
-        catchError(err => {
-          if (err?.status === 404) {
-            return of({
-              status: 'empty',
-              message: 'Vencedor ainda não definido.'
-            } as const);
-          }
-          return of({
-            status: 'error',
-            message: 'Erro ao carregar o vencedor.'
-          } as const);
-        })
+      jogo: this.jogoService.getJogoById(this.jogoId).pipe(catchError(() => of(null))),
+      resultados: this.jogoService.getJogoResultados(this.jogoId).pipe(catchError(() => of([]))),
+      winnerState: this.jogoService.getJogoWinner(this.jogoId).pipe(
+        switchMap(winner => of({ status: 'ready', data: winner } as const)),
+        catchError(() => of({ status: 'empty', message: 'Vencedor ainda não definido.' } as const))
       )
     }).subscribe(({ jogo, resultados, winnerState }) => {
       this.jogo = jogo;
       this.resultados = resultados;
-      this.winnerState = winnerState;
+      this.winnerState = winnerState as any;
       this.loading = false;
     });
   }
 
   onRegistrarResultado(): void {
-    if (this.jogoId === null) {
-      this.registerState = { status: 'error', message: 'Jogo inválido.' };
-      return;
-    }
-
-    if (this.resultadoForm.invalid) {
-      this.resultadoForm.markAllAsTouched();
-      return;
-    }
-
-    const { timeId, pontos } = this.resultadoForm.getRawValue();
-    if (timeId === null || pontos === null) {
-      this.registerState = {
-        status: 'error',
-        message: 'Preencha timeId e pontos.'
-      };
-      return;
-    }
+    if (this.resultadoForm.invalid || !this.jogoId) return;
 
     this.registerState = { status: 'submitting' };
+    const { timeId, pontos } = this.resultadoForm.getRawValue();
 
-    this.jogoService
-      .registrarResultadoConfronto(this.jogoId, { timeId, pontos })
-      .pipe(
-        switchMap(() =>
-          forkJoin({
-            resultados: this.jogoService.getJogoResultados(this.jogoId as number),
-            winnerState: this.jogoService.getJogoWinner(this.jogoId as number).pipe(
-              switchMap((winner) => {
-                if (winner.empate) {
-                  return of({ status: 'ready', data: winner } as const);
-                }
-                if (winner.vencedorTimeId === null) {
-                  return of({
-                    status: 'empty',
-                    message: 'Vencedor ainda não definido.'
-                  } as const);
-                }
-                return of({ status: 'ready', data: winner } as const);
-              }),
-              catchError(err => {
-                if (err?.status === 404) {
-                  return of({
-                    status: 'empty',
-                    message: 'Vencedor ainda não definido.'
-                  } as const);
-                }
-                return of({
-                  status: 'error',
-                  message: 'Erro ao carregar o vencedor.'
-                } as const);
-              })
-            )
-          })
-        )
-      )
-      .subscribe({
-        next: ({ resultados, winnerState }) => {
-          this.resultados = resultados;
-          this.winnerState = winnerState;
-          this.registerState = {
-            status: 'success',
-            message: 'Resultado registrado com sucesso.'
-          };
-          this.resultadoForm.reset({ timeId, pontos: null });
-        },
-        error: (err) => {
-          const message =
-            err?.status === 400
-              ? 'Dados inválidos. Verifique timeId e pontos.'
-              : err?.status === 401
-                ? 'Sessão expirada. Faça login novamente.'
-                : 'Não foi possível registrar o resultado. Tente novamente.';
-          this.registerState = { status: 'error', message };
-          console.error('Erro ao registrar resultado:', err);
-        }
-      });
+    this.jogoService.registrarResultadoConfronto(this.jogoId, { timeId: Number(timeId), pontos: Number(pontos) }).subscribe({
+      next: () => {
+        this.loadData();
+        this.registerState = { status: 'success', message: 'Resultado registrado com sucesso.' };
+        this.resultadoForm.reset();
+      },
+      error: () => {
+        this.registerState = { status: 'error', message: 'Erro ao registrar resultado.' };
+      }
+    });
+  }
+
+  onDeleteResultado(timeId: number): void {
+    if (!this.jogoId || !confirm('Deseja realmente remover este resultado?')) return;
+
+    this.jogoService.deleteMatchResult(this.jogoId, timeId).subscribe({
+      next: () => this.loadData(),
+      error: () => alert('Erro ao remover resultado.')
+    });
   }
 }

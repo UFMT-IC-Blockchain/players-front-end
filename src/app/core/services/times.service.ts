@@ -19,4 +19,16 @@ export class TimesService {
   getTimeById(id: number): Observable<TimeDetail> {
     return this.http.get<TimeDetail>(`${this.apiUrl}/times/${id}`);
   }
+
+  createTime(nome: string): Observable<Time> {
+    return this.http.post<Time>(`${this.apiUrl}/times`, { nome });
+  }
+
+  updateTime(id: number, nome: string): Observable<Time> {
+    return this.http.patch<Time>(`${this.apiUrl}/times/${id}`, { nome });
+  }
+
+  deleteTime(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/times/${id}`);
+  }
 }

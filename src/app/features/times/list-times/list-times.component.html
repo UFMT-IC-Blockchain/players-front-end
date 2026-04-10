@@ -1,31 +1,76 @@
-<div class="times-page">
-  <div class="header">
-    <h1>Times</h1>
+<div class="list-container">
+  <div class="header-section">
+    <div class="title-wrapper">
+      <h2>Times</h2>
+      <p>Gerencie as equipes do sistema</p>
+    </div>
+    <button *ngIf="isAdmin" class="btn-primary" (click)="openCreateModal()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      Novo Time
+    </button>
   </div>
 
-  <div *ngIf="status === 'loading'" class="state loading" role="status" aria-live="polite">
-    <app-spinner [inline]="true" size="sm"></app-spinner>
-    <p>Carregando times...</p>
+  <div *ngIf="status === 'loading'" class="loading-state">
+    <app-spinner size="lg" label="Carregando times..."></app-spinner>
   </div>
 
-  <app-alert *ngIf="status === 'error'" type="error" [message]="errorMessage" role="alert">
-    <button actions type="button" class="btn-primary" (click)="loadTimes()">Tentar novamente</button>
+  <app-alert *ngIf="status === 'error'" type="error" [message]="errorMessage">
+    <button actions class="btn-primary" type="button" (click)="loadTimes()">Tentar novamente</button>
   </app-alert>
 
-  <div *ngIf="status === 'empty'" class="state empty" role="status">
-    <p>Nenhum time encontrado.</p>
+  <div *ngIf="status === 'empty'" class="empty-state glass-card">
+    <div class="empty-icon">🛡️</div>
+    <h3>Nenhum time encontrado</h3>
+    <button *ngIf="isAdmin" class="btn-primary" (click)="openCreateModal()">Cadastrar Primeiro Time</button>
   </div>
 
-  <div *ngIf="status === 'ready'" class="grid">
-    <div class="card" *ngFor="let time of times; trackBy: trackByTimeId">
-      <div class="card-main">
-        <div class="title">
-          <span class="name">{{ time.nome || ('Time #' + time.id) }}</span>
-          <span class="sigla" *ngIf="time.sigla">{{ time.sigla }}</span>
+  <div *ngIf="status === 'ready'" class="cards-grid">
+    <div *ngFor="let time of times; trackBy: trackByTimeId" class="glass-card time-card">
+      <div class="card-content">
+        <div class="time-header">
+          <span class="id-badge">#{{ time.id }}</span>
+          <h3>{{ time.nome }}</h3>
         </div>
-        <div class="meta">ID: {{ time.id }}</div>
+        
+        <div class="actions" *ngIf="isAdmin">
+          <button class="btn-icon edit" (click)="openEditModal(time)" title="Editar">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          </button>
+          <button class="btn-icon delete" (click)="openDeleteConfirm(time)" title="Excluir">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+          </button>
+        </div>
       </div>
-      <a class="btn-outline" [routerLink]="['/times', time.id]">Detalhes</a>
+      
+      <div class="card-footer">
+        <button class="btn-link" [routerLink]="['/times', time.id]">
+          Ver detalhes
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
     </div>
   </div>
 </div>
+
+<app-modal
+  [isOpen]="isModalOpen"
+  [title]="timeToDelete ? 'Excluir Time' : (isEditing ? 'Editar Time' : 'Novo Time')"
+  [confirmText]="timeToDelete ? 'Excluir' : 'Salvar'"
+  (confirmed)="confirmAction()"
+  (closed)="closeModal()"
+>
+  <div *ngIf="timeToDelete">
+    Tem certeza que deseja excluir o time <strong>{{ timeToDelete.nome }}</strong>? Esta ação não pode ser desfeita.
+  </div>
+  
+  <div *ngIf="!timeToDelete" class="form-group">
+    <label for="timeName">Nome do Time</label>
+    <input 
+      type="text" 
+      id="timeName" 
+      class="form-control" 
+      [(ngModel)]="timeName" 
+      placeholder="Digite o nome da equipe"
+    >
+  </div>
+</app-modal>

@@ -1,17 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { Jogo, MatchResult, MatchWinnerResult } from '../models/jogo.model';
-
-export type RegistrarResultadoConfrontoRequest = {
-  timeId: number;
-  pontos: number;
-};
-
-export type RegistrarResultadoConfrontoResponse = {
-  ok: true;
-};
+import { Jogo, JogoComDetalhes, MatchResult, MatchWinnerResult } from '../models/jogo.model';
 
 @Injectable({
   providedIn: 'root'
@@ -21,8 +13,8 @@ export class JogoService {
 
   constructor(private http: HttpClient) {}
 
-  getJogos(): Observable<Jogo[]> {
-    return this.http.get<Jogo[]>(`${this.apiUrl}/jogo/all`);
+  getJogos(): Observable<JogoComDetalhes[]> {
+    return this.http.get<JogoComDetalhes[]>(`${this.apiUrl}/jogo/all`);
   }
 
   getJogoById(id: number): Observable<Jogo> {
@@ -31,10 +23,13 @@ export class JogoService {
 
   getJogoResultados(jogoId: number): Observable<MatchResult[]> {
     return this.http.get<any[]>(`${this.apiUrl}/confrontos/${jogoId}/results`).pipe(
-      map(results => results.map(r => ({
-        ...r,
-        timeId: r.idTime || r.timeId // Map idTime from backend to timeId for frontend
-      })))
+      map((results) =>
+        results.map((res) => ({
+          timeId: res.idTime,
+          pontuacao: res.pontuacao,
+          vencedor: res.vencedor
+        } as MatchResult))
+      )
     );
   }
 
@@ -42,17 +37,15 @@ export class JogoService {
     return this.http.get<MatchWinnerResult>(`${this.apiUrl}/confrontos/${jogoId}/winner`);
   }
 
-  registrarResultadoConfronto(
-    jogoId: number,
-    payload: RegistrarResultadoConfrontoRequest
-  ): Observable<RegistrarResultadoConfrontoResponse> {
-    return this.http.post<RegistrarResultadoConfrontoResponse>(
-      `${this.apiUrl}/confrontos/${jogoId}/result`,
-      payload
-    );
+  criarJogo(duracao: number): Observable<Jogo> {
+    return this.http.post<Jogo>(`${this.apiUrl}/jogo/criar`, { duracao });
   }
 
-  criarJogo(jogoData: { duracao: number }): Observable<Jogo> {
-    return this.http.post<Jogo>(`${this.apiUrl}/jogo/criar`, jogoData);
+  registrarResultadoConfronto(jogoId: number, data: { timeId: number; pontos: number }): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/confrontos/${jogoId}/result`, data);
+  }
+
+  deleteMatchResult(jogoId: number, timeId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/confrontos/${jogoId}/result/${timeId}`);
   }
 }

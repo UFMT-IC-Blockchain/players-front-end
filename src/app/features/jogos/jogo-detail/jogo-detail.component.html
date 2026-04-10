@@ -1,171 +1,138 @@
 <div class="detail-container">
   <div class="header">
-    <button class="back-btn" routerLink="/jogos">
-      <span class="icon">←</span> Voltar para a lista
+    <button class="back-link" routerLink="/jogos">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      Voltar para Lista
     </button>
-    <h1 *ngIf="jogo">Detalhes do Jogo #{{ jogo.id }}</h1>
   </div>
 
-  <div *ngIf="loading" class="state-container">
-    <app-spinner size="lg" label="Carregando informações do jogo..."></app-spinner>
+  <div *ngIf="loading" class="loading-state">
+    <app-spinner size="lg" label="Carregando detalhes do jogo..."></app-spinner>
   </div>
 
-  <div *ngIf="error && !loading" class="state-container error">
-    <app-alert type="error" [message]="error">
-      <button actions type="button" class="retry-btn" (click)="ngOnInit()">Tentar novamente</button>
-    </app-alert>
-  </div>
+  <app-alert *ngIf="error" type="error" [message]="error"></app-alert>
 
-  <div *ngIf="jogo && !loading && !error" class="content">
-    <div class="card main-info">
-      <h3>Informações Gerais</h3>
-      <div class="info-grid">
-        <div class="info-item">
-          <label>Duração</label>
-          <span>{{ jogo.duracao }} minutos</span>
+  <div *ngIf="!loading && jogo" class="content-grid">
+    <div class="main-info">
+      <section class="game-card glass-card">
+        <div class="card-header">
+          <span class="game-id">Partida #{{ jogo.id }}</span>
+          <div class="status-badge" [class.live]="resultados.length > 0">
+            {{ resultados.length > 0 ? 'Concluída' : 'Agendada' }}
+          </div>
         </div>
-        <div class="info-item">
-          <label>Status</label>
-          <span class="badge" [class.completed]="resultados.length > 0">
-            {{ resultados.length > 0 ? 'Finalizado' : 'Em andamento' }}
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <div class="card vencedor">
-      <h3>Vencedor</h3>
-
-      <ng-container [ngSwitch]="winnerState.status">
-        <div *ngSwitchCase="'loading'" class="winner-state">
-          <app-spinner [inline]="true" size="sm" label="Carregando vencedor..."></app-spinner>
+        
+        <div class="stats-row">
+          <div class="stat-item">
+            <span class="label">Duração</span>
+            <span class="value">{{ jogo.duracao }} min</span>
+          </div>
         </div>
 
-        <div *ngSwitchCase="'error'" class="winner-state error">
-          <app-alert type="error" [message]="winnerErrorMessage ?? 'Erro ao carregar o vencedor.'"></app-alert>
-        </div>
-
-        <div *ngSwitchCase="'empty'" class="winner-state empty">
-          <div class="empty-icon">—</div>
-          <p>{{ winnerEmptyMessage }}</p>
-        </div>
-
-        <ng-container *ngSwitchCase="'ready'">
-          <div class="winner-ready" *ngIf="winnerReady as winner">
-            <div class="winner-badge" [class.draw]="winner.empate">
-              <span class="value">
-                {{ winner.empate ? 'Sem vencedor definido' : 'Time #' }}
-                <a *ngIf="!winner.empate" [routerLink]="['/times', winner.vencedorTimeId]" class="team-link">{{ winner.vencedorTimeId }}</a>
-              </span>
-            </div>
-
-            <div class="placares" *ngIf="winner.placares.length > 0">
-              <div
-                class="placar-row"
-                *ngFor="let placar of winner.placares"
-                [class.is-winner]="!winner.empate && placar.timeId === winner.vencedorTimeId"
-              >
-                <span class="team">
-                  <a [routerLink]="['/times', placar.timeId]" class="team-link">Time #{{ placar.timeId }}</a>
+        <div class="winner-section" *ngIf="resultados.length >= 2">
+          <h4>Vencedor</h4>
+          <div class="winner-state-container">
+            <div class="winner-ready" *ngIf="winnerReady as winner">
+              <div class="winner-badge" [class.draw]="winner.empate">
+                <span class="value">
+                  {{ winner.empate ? 'Sem vencedor definido' : 'Time #' }}
+                  <a *ngIf="!winner.empate" [routerLink]="['/times', winner.vencedorTimeId]" class="team-link">{{ winner.vencedorTimeId }}</a>
                 </span>
-                <span class="points">{{ placar.pontos }} pts</span>
+              </div>
+  
+              <div class="placares-mini">
+                <div 
+                  class="placar-item" 
+                  *ngFor="let placar of winner.placares"
+                  [class.is-winner]="!winner.empate && placar.timeId === winner.vencedorTimeId"
+                >
+                  <span class="team">
+                    <a [routerLink]="['/times', placar.timeId]" class="team-link">Time #{{ placar.timeId }}</a>
+                  </span>
+                  <span class="points">{{ placar.pontos }} pts</span>
+                </div>
               </div>
             </div>
-          </div>
-        </ng-container>
-      </ng-container>
-    </div>
-
-    <div class="card resultados">
-      <h3>Resultados do Confronto</h3>
-      <div *ngIf="resultados.length === 0" class="empty-state">
-        <p>Ainda não há resultados registrados para este jogo.</p>
-      </div>
-
-      <div *ngIf="resultados.length > 0" class="results-list">
-        <div *ngFor="let res of resultados" class="result-item" [class.winner]="res.vencedor">
-          <div class="team-info">
-            <a class="team-id" [routerLink]="['/times', res.timeId]">Time #{{ res.timeId }}</a>
-            <span *ngIf="res.vencedor" class="winner-label">🏆 Vencedor</span>
-          </div>
-          <div class="score">
-            {{ res.pontuacao }} pts
+            <app-alert *ngIf="!winnerReady" type="info" message="Processando resultado final..."></app-alert>
           </div>
         </div>
-      </div>
+      </section>
+
+      <section class="results-section glass-card">
+        <div class="section-header">
+          <h3>Resultados do Confronto</h3>
+          <span class="count">{{ resultados.length }} times registrados</span>
+        </div>
+
+        <div *ngIf="resultados.length === 0" class="empty-results">
+          <p>Nenhum resultado registrado para esta partida ainda.</p>
+        </div>
+
+        <div *ngIf="resultados.length > 0" class="results-list">
+          <div *ngFor="let res of resultados" class="result-item" [class.winner]="res.vencedor">
+            <div class="team-info">
+              <a class="team-id" [routerLink]="['/times', res.timeId]">Time #{{ res.timeId }}</a>
+              <span *ngIf="res.vencedor" class="winner-label">🏆 Vencedor</span>
+            </div>
+            <div class="score-actions">
+              <div class="score">
+                {{ res.pontuacao }} <span class="unit">pts</span>
+              </div>
+              <button *ngIf="isAdmin" class="btn-delete" (click)="onDeleteResultado(res.timeId)" title="Excluir Resultado">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
 
-    <div class="card registrar">
-      <h3>Registrar resultado</h3>
-
-      <app-alert
-        *ngIf="registerState.status === 'success'"
-        type="success"
-        [message]="registerState.message"
-        role="status"
-      ></app-alert>
-
-      <app-alert
-        *ngIf="registerState.status === 'error'"
-        type="error"
-        [message]="registerState.message"
-        role="alert"
-      ></app-alert>
-
-      <form class="form" [formGroup]="resultadoForm" (ngSubmit)="onRegistrarResultado()">
-        <div class="form-grid">
+    <aside class="side-panel" *ngIf="isAdmin">
+      <section class="register-card glass-card">
+        <h3>Registrar Pontuação</h3>
+        <p class="hint">Adicione o desempenho de cada equipe no jogo.</p>
+        
+        <form [formGroup]="resultadoForm" (ngSubmit)="onRegistrarResultado()">
           <div class="form-group">
-            <label class="label-text" for="timeId">Time</label>
-            <input
-              id="timeId"
-              type="number"
-              inputmode="numeric"
-              class="input-field"
-              placeholder="Ex: 1"
-              formControlName="timeId"
-              [class.invalid]="resultadoForm.get('timeId')?.invalid && resultadoForm.get('timeId')?.touched"
-            />
-            <div class="error-text" *ngIf="resultadoForm.get('timeId')?.touched && resultadoForm.get('timeId')?.invalid">
-              <span *ngIf="resultadoForm.get('timeId')?.errors?.['required']">Informe o timeId.</span>
-              <span *ngIf="resultadoForm.get('timeId')?.errors?.['min']">Use um número maior que 0.</span>
-              <span *ngIf="resultadoForm.get('timeId')?.errors?.['integer']">Use um número inteiro.</span>
+            <label for="timeId">Time</label>
+            <select id="timeId" formControlName="timeId" class="form-control">
+                <option [ngValue]="null" disabled>Selecione um time</option>
+                <option *ngFor="let team of allTeams" [ngValue]="team.id">
+                    {{ team.nome }} (ID: {{ team.id }})
+                </option>
+            </select>
+            <div class="error-msg" *ngIf="resultadoForm.get('timeId')?.touched && resultadoForm.get('timeId')?.invalid">
+              Selecione uma equipe válida.
             </div>
           </div>
 
           <div class="form-group">
-            <label class="label-text" for="pontos">Pontos</label>
-            <input
-              id="pontos"
-              type="number"
-              inputmode="numeric"
-              class="input-field"
-              placeholder="Ex: 3"
-              formControlName="pontos"
-              [class.invalid]="resultadoForm.get('pontos')?.invalid && resultadoForm.get('pontos')?.touched"
-            />
-            <div class="error-text" *ngIf="resultadoForm.get('pontos')?.touched && resultadoForm.get('pontos')?.invalid">
-              <span *ngIf="resultadoForm.get('pontos')?.errors?.['required']">Informe os pontos.</span>
-              <span *ngIf="resultadoForm.get('pontos')?.errors?.['min']">Use um valor maior ou igual a 0.</span>
-              <span *ngIf="resultadoForm.get('pontos')?.errors?.['max']">Use um valor menor ou igual a 999.</span>
-              <span *ngIf="resultadoForm.get('pontos')?.errors?.['integer']">Use um número inteiro.</span>
+            <label for="pontos">Pontuação</label>
+            <input 
+              type="number" 
+              id="pontos" 
+              formControlName="pontos" 
+              class="form-control" 
+              placeholder="0"
+            >
+            <div class="error-msg" *ngIf="resultadoForm.get('pontos')?.touched && resultadoForm.get('pontos')?.invalid">
+              Insira um valor entre 0 e 999.
             </div>
           </div>
-        </div>
 
-        <div class="actions">
-          <button
-            class="btn-primary"
-            type="submit"
-            [disabled]="resultadoForm.invalid || registerState.status === 'submitting'"
-          >
-            <span *ngIf="registerState.status !== 'submitting'">Registrar</span>
-            <span *ngIf="registerState.status === 'submitting'" class="btn-loading">
-              <app-spinner [inline]="true" size="sm"></app-spinner>
-              Registrando...
-            </span>
+          <button type="submit" class="btn-primary" [disabled]="registerState.status === 'submitting'">
+            {{ registerState.status === 'submitting' ? 'Registrando...' : 'Salvar Resultado' }}
           </button>
-        </div>
-      </form>
-    </div>
+
+          <app-alert 
+            *ngIf="registerState.status === 'success' || registerState.status === 'error'" 
+            [type]="registerState.status === 'success' ? 'success' : 'error'"
+            [message]="registerState.status === 'success' ? registerState.message : registerState.message"
+            [dismissible]="true"
+            (dismissed)="registerState = { status: 'idle' }"
+          ></app-alert>
+        </form>
+      </section>
+    </aside>
   </div>
 </div>

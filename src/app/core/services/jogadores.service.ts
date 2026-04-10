@@ -12,7 +12,23 @@ export class JogadoresService {
 
   constructor(private http: HttpClient) {}
 
+  getJogadores(): Observable<Jogador[]> {
+    return this.http.get<Jogador[]>(`${this.apiUrl}/jogadores`);
+  }
+
   getJogadorByCarteiraStellar(wallet: string): Observable<Jogador> {
     return this.http.get<Jogador>(`${this.apiUrl}/jogadores/stellar/${wallet}`);
+  }
+
+  createJogador(data: { nome: string; wallet: string; timeId?: number }): Observable<Jogador> {
+    return this.http.post<Jogador>(`${this.apiUrl}/jogadores`, data);
+  }
+
+  updateJogador(id: number, data: { nome?: string; wallet?: string; timeId?: number }): Observable<Jogador> {
+    return this.http.patch<Jogador>(`${this.apiUrl}/jogadores/${id}`, data);
+  }
+
+  deleteJogador(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/jogadores/${id}`);
   }
 }

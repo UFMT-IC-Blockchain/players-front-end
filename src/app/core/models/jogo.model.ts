@@ -7,7 +7,7 @@ export interface MatchResult {
   timeId: number;
   pontuacao: number;
   vencedor: boolean;
-  idJogo: number;
+  idJogo?: number;
 }
 
 export type MatchScore = {

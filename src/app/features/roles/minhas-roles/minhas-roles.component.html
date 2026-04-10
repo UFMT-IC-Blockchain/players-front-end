@@ -1,0 +1,25 @@
+<div class="roles-page">
+  <div class="header">
+    <h1>Minhas roles</h1>
+  </div>
+
+  <div *ngIf="status === 'loading'" class="state loading" role="status" aria-live="polite">
+    <span class="spinner" aria-hidden="true"></span>
+    <p>Carregando roles...</p>
+  </div>
+
+  <div *ngIf="status === 'error'" class="state error" role="alert">
+    <p>{{ errorMessage }}</p>
+    <button type="button" class="btn-primary" (click)="loadRoles()">Tentar novamente</button>
+  </div>
+
+  <div *ngIf="status === 'empty'" class="state empty" role="status">
+    <p>Nenhuma role encontrada.</p>
+  </div>
+
+  <div *ngIf="status === 'ready'" class="grid">
+    <div class="card" *ngFor="let role of roles; trackBy: trackByRole">
+      <span class="badge" [class.admin]="isAdmin(role)">{{ role.nome }}</span>
+    </div>
+  </div>
+</div>

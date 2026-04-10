@@ -1,0 +1,200 @@
+<div class="page">
+  <div class="header">
+    <h1>Recompensas</h1>
+  </div>
+
+  <div class="card tabs-card" role="tablist" aria-label="Filtros de recompensas">
+    <button
+      type="button"
+      class="tab"
+      role="tab"
+      [attr.aria-selected]="activeTab === 'geral'"
+      [class.active]="activeTab === 'geral'"
+      (click)="setTab('geral')"
+    >
+      Geral
+    </button>
+    <button
+      type="button"
+      class="tab"
+      role="tab"
+      [attr.aria-selected]="activeTab === 'jogador'"
+      [class.active]="activeTab === 'jogador'"
+      (click)="setTab('jogador')"
+    >
+      Por Jogador
+    </button>
+    <button
+      type="button"
+      class="tab"
+      role="tab"
+      [attr.aria-selected]="activeTab === 'jogo'"
+      [class.active]="activeTab === 'jogo'"
+      (click)="setTab('jogo')"
+    >
+      Por Jogo
+    </button>
+    <button
+      type="button"
+      class="tab"
+      role="tab"
+      [attr.aria-selected]="activeTab === 'status'"
+      [class.active]="activeTab === 'status'"
+      (click)="setTab('status')"
+    >
+      Por Status
+    </button>
+  </div>
+
+  <div class="card">
+    <ng-container [ngSwitch]="activeTab">
+      <div *ngSwitchCase="'geral'" class="filters">
+        <div class="filters-title">Consulta geral</div>
+        <div class="actions">
+          <button
+            type="button"
+            class="btn-primary"
+            (click)="onBuscarGeral()"
+            [disabled]="activeState.status === 'loading'"
+          >
+            <span *ngIf="activeState.status !== 'loading'">Carregar</span>
+            <span *ngIf="activeState.status === 'loading'" class="loading-inline">
+              <span class="spinner" aria-hidden="true"></span>
+              Carregando...
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <form *ngSwitchCase="'jogador'" class="filters" [formGroup]="jogadorForm" (ngSubmit)="onBuscarPorJogador()">
+        <div class="filters-title">Filtro por jogador</div>
+        <div class="field">
+          <label for="jogadorId">Jogador ID</label>
+          <input
+            id="jogadorId"
+            type="number"
+            inputmode="numeric"
+            class="input"
+            formControlName="jogadorId"
+            min="1"
+            step="1"
+            placeholder="Ex: 1"
+            [attr.aria-invalid]="jogadorIdCtrl.touched && jogadorIdCtrl.invalid ? true : null"
+          />
+          <div class="hint" *ngIf="jogadorIdCtrl.touched && jogadorIdCtrl.invalid" role="alert">
+            <span *ngIf="jogadorIdCtrl.errors?.['required']">Informe o jogadorId.</span>
+            <span *ngIf="jogadorIdCtrl.errors?.['min']">Use um inteiro maior que 0.</span>
+            <span *ngIf="jogadorIdCtrl.errors?.['integer']">Use um número inteiro.</span>
+          </div>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn-primary" [disabled]="jogadorForm.invalid || activeState.status === 'loading'">
+            <span *ngIf="activeState.status !== 'loading'">Buscar</span>
+            <span *ngIf="activeState.status === 'loading'" class="loading-inline">
+              <span class="spinner" aria-hidden="true"></span>
+              Buscando...
+            </span>
+          </button>
+        </div>
+      </form>
+
+      <form *ngSwitchCase="'jogo'" class="filters" [formGroup]="jogoForm" (ngSubmit)="onBuscarPorJogo()">
+        <div class="filters-title">Filtro por jogo</div>
+        <div class="field">
+          <label for="jogoId">Jogo ID</label>
+          <input
+            id="jogoId"
+            type="number"
+            inputmode="numeric"
+            class="input"
+            formControlName="jogoId"
+            min="1"
+            step="1"
+            placeholder="Ex: 10"
+            [attr.aria-invalid]="jogoIdCtrl.touched && jogoIdCtrl.invalid ? true : null"
+          />
+          <div class="hint" *ngIf="jogoIdCtrl.touched && jogoIdCtrl.invalid" role="alert">
+            <span *ngIf="jogoIdCtrl.errors?.['required']">Informe o jogoId.</span>
+            <span *ngIf="jogoIdCtrl.errors?.['min']">Use um inteiro maior que 0.</span>
+            <span *ngIf="jogoIdCtrl.errors?.['integer']">Use um número inteiro.</span>
+          </div>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn-primary" [disabled]="jogoForm.invalid || activeState.status === 'loading'">
+            <span *ngIf="activeState.status !== 'loading'">Buscar</span>
+            <span *ngIf="activeState.status === 'loading'" class="loading-inline">
+              <span class="spinner" aria-hidden="true"></span>
+              Buscando...
+            </span>
+          </button>
+        </div>
+      </form>
+
+      <form *ngSwitchCase="'status'" class="filters" [formGroup]="statusForm" (ngSubmit)="onBuscarPorStatus()">
+        <div class="filters-title">Filtro por status</div>
+        <div class="field">
+          <label for="status">Status</label>
+          <input
+            id="status"
+            type="text"
+            class="input"
+            formControlName="status"
+            placeholder="Ex: PENDENTE"
+            [attr.aria-invalid]="statusCtrl.touched && statusCtrl.invalid ? true : null"
+          />
+          <div class="hint" *ngIf="statusCtrl.touched && statusCtrl.invalid" role="alert">
+            <span *ngIf="statusCtrl.errors?.['required']">Informe o status.</span>
+            <span *ngIf="statusCtrl.errors?.['trimmedRequired']">O status não pode ser vazio.</span>
+          </div>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn-primary" [disabled]="statusForm.invalid || activeState.status === 'loading'">
+            <span *ngIf="activeState.status !== 'loading'">Buscar</span>
+            <span *ngIf="activeState.status === 'loading'" class="loading-inline">
+              <span class="spinner" aria-hidden="true"></span>
+              Buscando...
+            </span>
+          </button>
+        </div>
+      </form>
+    </ng-container>
+  </div>
+
+  <div *ngIf="activeState.status === 'idle'" class="state empty" role="status" aria-live="polite">
+    <p>Selecione uma aba e realize uma busca para ver os resultados.</p>
+  </div>
+
+  <div *ngIf="activeState.status === 'loading'" class="state loading" role="status" aria-live="polite">
+    <span class="spinner-on-surface" aria-hidden="true"></span>
+    <p>Carregando resultados...</p>
+  </div>
+
+  <div *ngIf="activeState.status === 'error'" class="state error" role="alert">
+    <p>{{ activeState.message }}</p>
+    <button type="button" class="btn-primary" (click)="onRetry()">
+      Tentar novamente
+    </button>
+  </div>
+
+  <div *ngIf="activeState.status === 'empty'" class="state empty" role="status">
+    <p>Nenhuma recompensa encontrada.</p>
+  </div>
+
+  <div *ngIf="activeState.status === 'ready'" class="grid">
+    <div class="card result-card" *ngFor="let item of activeItems; trackBy: trackByRecompensaId">
+      <div class="card-main">
+        <div class="title">
+          <span class="name">Recompensa #{{ item.id }}</span>
+          <span class="badge" [class]="getStatusClass(item.status)">{{ getStatusLabel(item.status) }}</span>
+        </div>
+        <div class="meta">Valor pago: {{ formatValorPago(item.valorPago) }}</div>
+        <div class="meta" *ngIf="item.jogador">
+          Jogador: {{ item.jogador.nome || ('Jogador #' + item.jogador.id) }} (ID {{ item.jogador.id }})
+        </div>
+        <div class="meta" *ngIf="item.jogo">Jogo: ID {{ item.jogo.id }}</div>
+        <div class="meta" *ngIf="item.dataRegistro">Registrado em: {{ item.dataRegistro | date: 'short' }}</div>
+        <div class="meta" *ngIf="item.hashTransacao">Hash: {{ item.hashTransacao }}</div>
+      </div>
+    </div>
+  </div>
+</div>

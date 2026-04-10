@@ -9,8 +9,6 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent)
   },
 
-  
-
   {
     path: 'jogos',
     canMatch: [authGuard],
@@ -22,6 +20,14 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/roles/minhas-roles/minhas-roles.component').then(
         m => m.MinhasRolesComponent
+      )
+  },
+  {
+    path: 'recompensas',
+    canMatch: [authGuard],
+    loadComponent: () =>
+      import('./features/recompensas/recompensas.component').then(
+        m => m.RecompensasComponent
       )
   },
   {

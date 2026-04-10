@@ -27,6 +27,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/jogos/jogo-detail/jogo-detail.component').then(m => m.JogoDetailComponent)
   },
   {
+    path: 'jogadores/busca',
+    canMatch: [authGuard],
+    loadComponent: () => import('./features/jogadores/busca-jogador/busca-jogador.component').then(m => m.BuscaJogadorComponent)
+  },
+  {
     path: 'times/:id',
     canMatch: [authGuard],
     loadComponent: () => import('./features/times/time-detail-stub/time-detail-stub.component').then(m => m.TimeDetailComponent)

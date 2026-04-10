@@ -42,6 +42,14 @@ export const routes: Routes = [
     loadComponent: () => import('./features/times/list-times/list-times.component').then(m => m.ListTimesComponent)
   },
   {
+    path: 'estatisticas/top',
+    canMatch: [authGuard],
+    loadComponent: () =>
+      import('./features/estatisticas/top-scorers/top-scorers.component').then(
+        m => m.TopScorersComponent
+      )
+  },
+  {
     path: '',
     redirectTo: 'jogos',
     pathMatch: 'full'
